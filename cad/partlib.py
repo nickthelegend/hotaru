@@ -514,7 +514,16 @@ def stl_write(path, mesh):
     ln[ln == 0] = 1.0
     n = (n / ln).astype(np.float32)
     with open(path, "wb") as fh:
-        fh.write(b"hotaru partlib" + b"\0" * 68)
+        # EXACTLY 80 bytes, whatever the label says. This was written as
+        # a literal string plus a hand-counted 68 nulls, so renaming the
+        # project from "aibo" to "hotaru" pushed the header to 82 and
+        # every binary STL written after it was unreadable -- Bambu
+        # Studio said "the file does not contain any geometry data",
+        # because the triangle count was being read two bytes late.
+        # ljust does the counting now, so the label can be anything.
+        header = b"hotaru partlib"[:80].ljust(80, b"\0")
+        assert len(header) == 80, len(header)
+        fh.write(header)
         fh.write(struct.pack("<I", len(F)))
         tri32 = tri.astype(np.float32)
         for i in range(len(F)):
