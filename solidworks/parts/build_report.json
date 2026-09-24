@@ -1,0 +1,310 @@
+{
+ "MG996R": {
+  "volume_mm3": 35338.1,
+  "com_mm": [
+   10.37,
+   -0.0,
+   -21.24
+  ],
+  "features": 6,
+  "seconds": 10.5,
+  "printed": false
+ },
+ "Horn": {
+  "volume_mm3": 1531.7,
+  "com_mm": [
+   0.0,
+   0.0,
+   6.56
+  ],
+  "features": 2,
+  "seconds": 5.9,
+  "printed": false
+ },
+ "HornTrim": {
+  "volume_mm3": 1071.8,
+  "com_mm": [
+   0.0,
+   0.0,
+   6.05
+  ],
+  "features": 2,
+  "seconds": 7.1,
+  "printed": false
+ },
+ "h3-pin-shoulder": {
+  "volume_mm3": 2467.7,
+  "com_mm": [
+   7.87,
+   0.0,
+   0.0
+  ],
+  "features": 1,
+  "seconds": 5.1,
+  "printed": true
+ },
+ "h3-pinion": {
+  "volume_mm3": 6877.7,
+  "com_mm": [
+   24.73,
+   102.5,
+   -38.6
+  ],
+  "features": 4,
+  "seconds": 13.7,
+  "printed": true
+ },
+ "h3-link1": {
+  "volume_mm3": 81178.1,
+  "com_mm": [
+   12.25,
+   151.77,
+   14.0
+  ],
+  "features": 13,
+  "seconds": 32.4,
+  "printed": true
+ },
+ "h3-link1-cover": {
+  "volume_mm3": 33511.1,
+  "com_mm": [
+   -24.52,
+   152.33,
+   14.0
+  ],
+  "features": 5,
+  "seconds": 9.0,
+  "printed": true
+ },
+ "h3-tower": {
+  "volume_mm3": 96789.5,
+  "com_mm": [
+   -0.32,
+   84.8,
+   -18.63
+  ],
+  "features": 13,
+  "seconds": 19.3,
+  "printed": true
+ },
+ "h3-link2": {
+  "volume_mm3": 46581.0,
+  "com_mm": [
+   19.32,
+   239.05,
+   14.0
+  ],
+  "features": 9,
+  "seconds": 16.4,
+  "printed": true
+ },
+ "h3-link2-cover": {
+  "volume_mm3": 23009.9,
+  "com_mm": [
+   -31.03,
+   229.48,
+   14.0
+  ],
+  "features": 3,
+  "seconds": 7.4,
+  "printed": true
+ },
+ "h3-shade": {
+  "volume_mm3": 41652.5,
+  "com_mm": [
+   0.87,
+   44.37,
+   -0.0
+  ],
+  "features": 9,
+  "seconds": 14.2,
+  "printed": true
+ },
+ "PCA9685": {
+  "volume_mm3": 7439.5,
+  "com_mm": [
+   -0.0,
+   13.45,
+   -35.25
+  ],
+  "features": 4,
+  "seconds": 8.1,
+  "printed": false
+ },
+ "ESP32-S3": {
+  "volume_mm3": 7400.6,
+  "com_mm": [
+   11.0,
+   12.2,
+   35.0
+  ],
+  "features": 4,
+  "seconds": 8.1,
+  "printed": false
+ },
+ "MAX98357A": {
+  "volume_mm3": 1324.6,
+  "com_mm": [
+   -47.0,
+   14.08,
+   32.26
+  ],
+  "features": 2,
+  "seconds": 5.8,
+  "printed": false
+ },
+ "Speaker2040": {
+  "volume_mm3": 4357.5,
+  "com_mm": [
+   63.75,
+   12.8,
+   -4.0
+  ],
+  "features": 1,
+  "seconds": 4.9,
+  "printed": false
+ },
+ "INMP441": {
+  "volume_mm3": 282.7,
+  "com_mm": [
+   -71.0,
+   30.0,
+   -0.0
+  ],
+  "features": 1,
+  "seconds": 4.7,
+  "printed": false
+ },
+ "Cap2200uF": {
+  "volume_mm3": 5227.6,
+  "com_mm": [
+   -44.0,
+   16.0,
+   -44.0
+  ],
+  "features": 1,
+  "seconds": 5.1,
+  "printed": false
+ },
+ "CherryMX": {
+  "volume_mm3": 3443.1,
+  "com_mm": [
+   -0.0,
+   66.71,
+   -81.5
+  ],
+  "features": 4,
+  "seconds": 9.7,
+  "printed": false
+ },
+ "WS2812-ring": {
+  "volume_mm3": 1761.9,
+  "com_mm": [
+   0.0,
+   33.24,
+   -0.0
+  ],
+  "features": 2,
+  "seconds": 7.2,
+  "printed": false
+ },
+ "h3-disc": {
+  "volume_mm3": 80689.1,
+  "com_mm": [
+   0.0,
+   55.96,
+   2.46
+  ],
+  "features": 6,
+  "seconds": 11.5,
+  "printed": true
+ },
+ "h3-tub": {
+  "volume_mm3": 193852.1,
+  "com_mm": [
+   -3.52,
+   23.84,
+   0.95
+  ],
+  "features": 23,
+  "seconds": 35.3,
+  "printed": true
+ },
+ "h3-lipring": {
+  "volume_mm3": 38596.1,
+  "com_mm": [
+   0.0,
+   56.49,
+   -5.07
+  ],
+  "features": 6,
+  "seconds": 11.8,
+  "printed": true
+ },
+ "h3-head": {
+  "volume_mm3": 41741.4,
+  "com_mm": [
+   6.34,
+   301.18,
+   14.0
+  ],
+  "features": 12,
+  "seconds": 17.6,
+  "printed": true
+ },
+ "h3-head-cover": {
+  "volume_mm3": 9060.3,
+  "com_mm": [
+   -24.51,
+   303.12,
+   14.0
+  ],
+  "features": 6,
+  "seconds": 10.6,
+  "printed": true
+ },
+ "h3-keycap": {
+  "volume_mm3": 1523.8,
+  "com_mm": [
+   -0.0,
+   77.16,
+   -81.5
+  ],
+  "features": 2,
+  "seconds": 6.3,
+  "printed": true
+ },
+ "h3-pin-elbow": {
+  "volume_mm3": 2112.8,
+  "com_mm": [
+   6.54,
+   0.0,
+   0.0
+  ],
+  "features": 1,
+  "seconds": 5.1,
+  "printed": true
+ },
+ "h3-pin-head": {
+  "volume_mm3": 2112.8,
+  "com_mm": [
+   6.54,
+   0.0,
+   0.0
+  ],
+  "features": 1,
+  "seconds": 5.1,
+  "printed": true
+ },
+ "h3-ledclamp": {
+  "volume_mm3": 1695.9,
+  "com_mm": [
+   0.0,
+   34.82,
+   0.0
+  ],
+  "features": 1,
+  "seconds": 5.1,
+  "printed": true
+ }
+}

@@ -1,0 +1,113 @@
+{
+ "poses": {
+  "neutral": {
+   "angles": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "interferences": []
+  },
+  "rest": {
+   "angles": [
+    0,
+    15,
+    105,
+    70
+   ],
+   "interferences": []
+  },
+  "reach": {
+   "angles": [
+    0,
+    60,
+    40,
+    30
+   ],
+   "interferences": []
+  },
+  "lean-back": {
+   "angles": [
+    0,
+    -30,
+    60,
+    -30
+   ],
+   "interferences": []
+  },
+  "look-up": {
+   "angles": [
+    0,
+    10,
+    30,
+    -70
+   ],
+   "interferences": []
+  },
+  "fold": {
+   "angles": [
+    0,
+    0,
+    120,
+    75
+   ],
+   "interferences": []
+  },
+  "fold-back": {
+   "angles": [
+    0,
+    30,
+    -100,
+    0
+   ],
+   "interferences": []
+  },
+  "pan-left": {
+   "angles": [
+    -90,
+    20,
+    90,
+    45
+   ],
+   "interferences": []
+  },
+  "pan-right": {
+   "angles": [
+    90,
+    20,
+    90,
+    45
+   ],
+   "interferences": []
+  },
+  "full-reach": {
+   "angles": [
+    0,
+    70,
+    0,
+    0
+   ],
+   "interferences": []
+  },
+  "curious": {
+   "angles": [
+    35,
+    45,
+    75,
+    -20
+   ],
+   "interferences": []
+  },
+  "shy": {
+   "angles": [
+    -40,
+    -20,
+    110,
+    60
+   ],
+   "interferences": []
+  }
+ },
+ "torque": {}
+}

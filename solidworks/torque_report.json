@@ -1,0 +1,35 @@
+{
+ "shoulder": {
+  "joint_Nm": 0.509,
+  "servo_Nm": 0.283,
+  "stall_fraction_4v8": 0.307,
+  "worst_pose": [
+   0,
+   70,
+   20,
+   -5
+  ]
+ },
+ "elbow": {
+  "joint_Nm": 0.207,
+  "servo_Nm": 0.207,
+  "stall_fraction_4v8": 0.225,
+  "worst_pose": [
+   0,
+   -20,
+   110,
+   5
+  ]
+ },
+ "head": {
+  "joint_Nm": 0.02,
+  "servo_Nm": 0.02,
+  "stall_fraction_4v8": 0.022,
+  "worst_pose": [
+   0,
+   -25,
+   -40,
+   -25
+  ]
+ }
+}

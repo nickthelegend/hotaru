@@ -1,0 +1,450 @@
+[
+ {
+  "pose": [
+   -47,
+   24,
+   -31,
+   16
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   23,
+   -23,
+   -117,
+   51
+  ],
+  "guard": "collision",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -43,
+   -7,
+   119,
+   -4
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   61,
+   18,
+   33,
+   -52
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   24,
+   57,
+   6,
+   36
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   31,
+   -24,
+   62,
+   14
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -36,
+   -27,
+   88,
+   -4
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   39,
+   58,
+   51,
+   63
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -19,
+   50,
+   -13,
+   65
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   68,
+   -20,
+   -87,
+   -42
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   84,
+   14,
+   30,
+   -30
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   1,
+   9,
+   -36,
+   13
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   15,
+   60,
+   44,
+   64
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   64,
+   69,
+   41,
+   -51
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   65,
+   66,
+   97,
+   10
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   38,
+   -9,
+   80,
+   11
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -39,
+   -24,
+   85,
+   73
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -74,
+   50,
+   -21,
+   -52
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -37,
+   47,
+   89,
+   -68
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   21,
+   -26,
+   52,
+   -25
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   69,
+   68,
+   1,
+   75
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -34,
+   -22,
+   24,
+   -70
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -54,
+   11,
+   27,
+   -52
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -82,
+   57,
+   -45,
+   69
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   71,
+   8,
+   -10,
+   3
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   26,
+   30,
+   14,
+   18
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   79,
+   21,
+   -17,
+   33
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -47,
+   0,
+   115,
+   3
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   9,
+   -29,
+   -20,
+   12
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -86,
+   32,
+   32,
+   -66
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   23,
+   17,
+   43,
+   -22
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   37,
+   44,
+   -115,
+   -66
+  ],
+  "guard": "collision",
+  "sw_clear": false,
+  "hits": [
+   [
+    [
+     "h3-shade-1",
+     "h3-tower-1"
+    ],
+    14.2
+   ]
+  ]
+ },
+ {
+  "pose": [
+   32,
+   66,
+   -60,
+   -7
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   17,
+   2,
+   -33,
+   -28
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -24,
+   30,
+   -48,
+   -18
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   49,
+   -27,
+   17,
+   35
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -34,
+   -8,
+   73,
+   -39
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -56,
+   14,
+   48,
+   -60
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   -32,
+   3,
+   80,
+   -9
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ },
+ {
+  "pose": [
+   64,
+   -13,
+   -39,
+   23
+  ],
+  "guard": "ok",
+  "sw_clear": true,
+  "hits": []
+ }
+]

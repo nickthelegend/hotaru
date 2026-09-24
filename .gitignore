@@ -13,3 +13,8 @@ videos/*/renders/
 videos/*/snapshots/
 videos/*/assets/bgm/*.log
 videos/*/node_modules/
+
+# SolidWorks automation scratch
+sw/.sw_pid
+sw/_selftest/
+solidworks/parts/~$*

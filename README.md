@@ -1,3 +1,28 @@
+# HOTARU 3 — the SolidWorks rebuild
+
+**v2's arm wasn't stiff enough and its shoulder servo was working too hard.
+HOTARU 3 fixes both** and is modelled natively in SolidWorks. Everything is
+in [`sw/README.md`](sw/README.md): what changed, the SolidWorks interference
+and torque checks, the M3 bill of materials, and wiring.
+
+* shoulder **geared 1.8 : 1** with a printed pinion and gear. The arm turns on
+  O14 journal pins, not the servo spline
+* **box-section links**, **M3 bolts and nuts** throughout, no printed threads
+* turntable on a slew ring trapped by a bolted lip ring. The pan servo only turns it
+* a **PCA9685** drives all four servos, with a pose guard in the firmware
+* every servo under **1/3 of stall** across its whole range (SolidWorks mass
+  properties), and zero interferences at every checked pose
+
+| | |
+|---|---|
+| SolidWorks parts + assembly | [`solidworks/`](solidworks/) |
+| **print these** — 5 plates for a P1S | [`exports/v3/plates/`](exports/v3/plates/) |
+| firmware | [`firmware/hotaru_motion/`](firmware/hotaru_motion/) |
+
+The v2 description below stays for reference.
+
+---
+
 # HOTARU 2.0
 
 An animated desk lamp that sees, hears and moves. Four MG996R joints on a
