@@ -56,6 +56,7 @@
 #include "audio.h"
 #include "net.h"
 #include "brain.h"
+#include "ghost.h"
 
 enum State : uint8_t { S_IDLE, S_LISTEN, S_BUSY, S_SLEEP };
 State st = S_IDLE;
@@ -69,6 +70,9 @@ static void scheduleIdle() {
 static void touch() { lastTouch = millis(); scheduleIdle(); }
 
 static void setMood(Mood m) { mood = m; ledMood = m; }
+static const char* stateName() {
+  switch (st) { case S_LISTEN: return "listen"; case S_BUSY: return "busy"; case S_SLEEP: return "sleep"; default: return "idle"; }
+}
 static void eyes(LedMode m) { ledMode = m; }
 
 static void waitMotion(uint32_t maxMs) {
@@ -178,6 +182,14 @@ static void buttonPoll() {
   if (pressed && millis() - t0 > TAP_MS) {      // a hold: talk
     down = false;
     touch();
+    ghostEvent("key", "\"kind\":\"hold\"");
+    if (ghostCheckin) {                          // GHOST asked "are you OK?": the answer goes to the hub
+      st = S_LISTEN;
+      ghostListen(0);
+      st = S_IDLE;
+      while (digitalRead(PIN_BTN) == LOW) delay(10);
+      return;
+    }
     if (st == S_SLEEP) { setMood(MOOD_HAPPY); playAction("wake_up"); waitMotion(5000); }
     listenAndRespond();
     while (digitalRead(PIN_BTN) == LOW) delay(10);
@@ -187,6 +199,16 @@ static void buttonPoll() {
     down = false;
     if (millis() - t0 < 30) return;             // bounce
     touch();
+    if (ghostCheckin) {                          // a tap during a GHOST check-in: "I'm OK"
+      ghostCheckin = false;
+      ghostEvent("ok");
+      if (st == S_SLEEP) st = S_IDLE;
+      setMood(MOOD_HAPPY);
+      eyes(LED_MOOD);
+      playAction("nod");
+      return;
+    }
+    ghostEvent("key", "\"kind\":\"tap\"");
     if (st == S_SLEEP) {
       st = S_IDLE; setMood(MOOD_HAPPY); eyes(LED_MOOD); playAction("wake_up");
       if (online) speak("Mm, I'm awake!");
@@ -204,6 +226,7 @@ static const char* IDLE_ACTIONS[] = {"idle", "idle", "scan", "look_left", "look_
 
 static void idlePoll() {
   if (st != S_IDLE || !motionIdle) return;
+  if (ledMode >= LED_FOLLOW) return;          // GHOST is showing something: no fidgets, no dozing
   uint32_t now = millis();
   if (now - lastTouch > SLEEP_AFTER_S * 1000UL) {
     st = S_SLEEP;
@@ -356,6 +379,7 @@ void setup() {
   audioBegin();
   brainBegin();
   online = wifiBegin(15000);
+  if (online) ghostBegin();
   setMood(online ? MOOD_HAPPY : MOOD_CALM);
   eyes(online ? LED_MOOD : LED_ERROR);
   if (servosOn) { playAction("wake_up"); waitMotion(6000); }
@@ -369,5 +393,6 @@ void loop() {
   serialPoll();
   buttonPoll();
   idlePoll();
+  ghostPoll();
   delay(5);
 }

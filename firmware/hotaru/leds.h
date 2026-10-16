@@ -37,7 +37,12 @@ Mood moodFromName(const String& n, Mood dflt) {
 
 enum LedMode : uint8_t {
   LED_OFF, LED_MOOD, LED_BREATHE, LED_LISTEN, LED_THINK, LED_TALK, LED_RAINBOW, LED_LAMP,
-  LED_ERROR, LED_BOOT
+  LED_ERROR, LED_BOOT,
+  // GHOST modes, driven by the hub (ghost.h)
+  LED_FOLLOW,   // brightness follows a live signal: someone's breathing, sensed over Wi-Fi
+  LED_PATH,     // night path light: a low warm glow that fades in
+  LED_AMBER,    // something is unusual: slow amber pulse
+  LED_RED       // alert: fast red pulse
 };
 
 volatile LedMode ledMode = LED_BOOT;
@@ -46,6 +51,10 @@ volatile uint8_t eyeBright = 110;       // eye modes, 0..255
 volatile uint8_t lampBright = 230;      // reading-light mode
 volatile bool lampOn = false;           // the lamp is a lamp: stays on until told off
 volatile float talkLevel = 0.0f;        // 0..1, set by the speaker while it plays
+volatile float followLevel = 0.0f;      // 0..1, set by the GHOST hub (LED_FOLLOW)
+volatile uint8_t pathBright = 90;       // LED_PATH target brightness
+volatile uint32_t pathFadeMs = 4000;    // LED_PATH fade-in time
+volatile uint32_t pathSince = 0;        // millis() when LED_PATH started
 
 static rmt_data_t ledBuf[LED_COUNT * 24];
 static bool ledOk = false;
@@ -116,6 +125,20 @@ void ledsRender(uint32_t ms) {
         px[i] = scale({255, 196, 128}, lampBright / 255.0f); break;
       case LED_ERROR:
         px[i] = ((ms / 250) % 2) ? scale({255, 0, 0}, 0.6f) : RGB{0, 0, 0}; break;
+      case LED_FOLLOW: {                                     // the ring breathes with them
+        float v = followLevel;
+        px[i] = scale({150, 200, 255}, max(0.06f, eb * (0.15f + 0.85f * v)));
+        break;
+      }
+      case LED_PATH: {                                       // fade in, then hold
+        float t = pathFadeMs ? min(1.0f, (ms - pathSince) / (float)pathFadeMs) : 1.0f;
+        px[i] = scale({255, 150, 60}, (pathBright / 255.0f) * t);
+        break;
+      }
+      case LED_AMBER:
+        px[i] = scale({255, 130, 0}, 0.25f + 0.55f * (0.5f + 0.5f * sinf(ms * 0.0042f))); break;
+      case LED_RED:
+        px[i] = scale({255, 10, 0}, 0.2f + 0.8f * (0.5f + 0.5f * sinf(ms * 0.0126f))); break;
       case LED_BOOT: {
         int at = (ms / 70) % LED_COUNT;
         px[i] = (i == at) ? scale({255, 255, 255}, 0.7f) : RGB{0, 0, 0};
