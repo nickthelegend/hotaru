@@ -133,6 +133,34 @@ The CAD's joint limits are never exceeded whatever the calibration says.
 | `servo <i> <deg>` | raw servo angle 0..180 |
 | `wifi`, `forget` | Wi-Fi status, clear the conversation |
 
+## GHOST: the lamp as a home guardian
+
+With `GHOST_HUB_HOST` set in `secrets.h`, HOTARU also becomes the body of
+[GHOST](https://github.com/nickthelegend/ghost-nebius), a camera-less guardian
+that senses a home through Wi-Fi. Nothing changes when it's left empty.
+
+* **Link.** The lamp keeps a TCP connection to the hub (port 8770) and speaks
+  newline-delimited JSON. The hub can play any action, turn the base toward a
+  room, set the ring, make it speak (through the same Deepgram voice) and ask it
+  to listen. The lamp sends back key presses, what it heard, and status every
+  5 s. The full protocol is at the top of `ghost.h`.
+* **Ring modes for GHOST.**
+  * `follow`: brightness tracks a live signal, such as the breathing of someone
+    in the next room.
+  * `path`: a low warm night light that fades in.
+  * `amber` and `red`: check-in and alert pulses.
+  * While any of these is on, idle fidgets and dozing pause.
+* **Check-ins.** When the hub asks "are you okay?", a tap on the key answers
+  "I'm OK", and holding it records a spoken answer for the hub instead of
+  chatting.
+* **Wi-Fi sensing.** The lamp pings its router 100 times a second. It records
+  the channel state information of each reply (64 subcarrier amplitudes, which
+  ripple when someone breathes or moves) and streams it to the hub over UDP port
+  8771. Build with `GHOST_CSI 0` to leave it out.
+
+Test the hub without the lamp: `python -m hub.fake_lamp` in ghost-nebius
+speaks the same protocol.
+
 ## Files
 
 | file | |
@@ -145,6 +173,7 @@ The CAD's joint limits are never exceeded whatever the calibration says.
 | `audio.h` | I2S mic into PSRAM, I2S speaker, the stream that plays speech as it downloads |
 | `net.h` | Wi-Fi, a little JSON, Deepgram STT/TTS, OpenRouter |
 | `brain.h` | personality prompt, conversation memory, reading the model's reply |
+| `ghost.h` | the GHOST link: hub commands over TCP, Wi-Fi sensing (CSI) over UDP |
 | `secrets.h` | your keys (not in git); `secrets.example.h` is the template |
 
 Free OpenRouter models come and go: the list is at the top of `config.h`
