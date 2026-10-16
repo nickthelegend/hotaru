@@ -12,12 +12,21 @@ and torque checks, the M3 bill of materials, and wiring.
 * a **PCA9685** drives all four servos, with a pose guard in the firmware
 * every servo under **1/3 of stall** across its whole range (SolidWorks mass
   properties), and zero interferences at every checked pose
+* **it talks**: hold the key, speak, and it answers out loud and acts it out with
+  one of 60 gestures (Deepgram speech in and out, a free OpenRouter model as the brain)
+* every part's way in was checked in SolidWorks, 2 mm at a time; four small
+  **hand cuts** on already-printed parts make the order work without reprinting
+  (`hotaru3.HANDFIX`, shown step by step in the assembly video)
 
 | | |
 |---|---|
 | SolidWorks parts + assembly | [`solidworks/`](solidworks/) |
-| **print these** — 5 plates for a P1S | [`exports/v3/plates/`](exports/v3/plates/) |
-| firmware | [`firmware/hotaru_motion/`](firmware/hotaru_motion/) |
+| **print these** — plates for a P1S | [`exports/v3/plates/`](exports/v3/plates/) |
+| **the lamp's firmware** — voice, 60 actions, LEDs, calibration | [`firmware/hotaru/`](firmware/hotaru/) |
+| **wiring** — schematic and pin map | [`firmware/hotaru/README.md`](firmware/hotaru/README.md#wiring), [`docs/hotaru3-wiring.html`](docs/hotaru3-wiring.html) |
+| motion core on its own (bench tests) | [`firmware/hotaru_motion/`](firmware/hotaru_motion/) |
+| assembly video (HyperFrames, every bolt and nut) | [`videos/hotaru3-assembly/`](videos/hotaru3-assembly/) — `npm run render` |
+| insertion paths, hardware and gestures, checked | [`sw/h3_insert.py`](sw/h3_insert.py), [`sw/h3_hardware.py`](sw/h3_hardware.py), [`sw/h3_actions.py`](sw/h3_actions.py) |
 
 The v2 description below stays for reference.
 

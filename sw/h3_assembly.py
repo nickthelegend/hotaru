@@ -85,6 +85,7 @@ LAYOUT = [
     ("horn-pan", "Horn", "turret", T(R_PAN, (0, H.PAN_CASE_TOP, 0))),
     ("disc", "h3-disc", "turret", T()),
     ("tower", "h3-tower", "turret", T()),
+    ("keeper", "h3-tower-keeper", "turret", T()),       # sawn out by hand, bolted back
     ("servo-shoulder", "MG996R", "turret", T(R_ARM, (H.SH_CASE_TOP, H.Y_P, H.SH_SHAFT_Z))),
     ("pinion", "h3-pinion", "pinion", T()),
     ("horn-shoulder", "HornTrim", "pinion", T(R_ARM, (H.SH_CASE_TOP, H.Y_P, H.SH_SHAFT_Z))),
@@ -148,11 +149,12 @@ def sw_array(M):
 
 # ------------------------------------------------------------- assembly ---
 class Lamp:
-    def __init__(self, sw):
+    def __init__(self, sw, rows=None):
+        rows = LAYOUT if rows is None else rows
         self.sw = sw
         self.mu = L.cast(sw.app.GetMathUtility(), "IMathUtility")
         self.docs = {}
-        for _i, f, _g, _m in LAYOUT:
+        for _i, f, _g, _m in rows:
             if f in self.docs:
                 continue
             path = os.path.join(PARTS, f + ".SLDPRT")
@@ -164,7 +166,7 @@ class Lamp:
         self.doc = sw.new_assembly()
         self.ad = L.cast(self.doc, "IAssemblyDoc")
         self.comps = {}
-        for inst, f, g, M in LAYOUT:
+        for inst, f, g, M in rows:
             c = self.ad.AddComponent5(self.docs[f], 0, "", False, "", 0, 0, 0)
             if c is None:
                 raise RuntimeError("AddComponent5 failed for " + f)

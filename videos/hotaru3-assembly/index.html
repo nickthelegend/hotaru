@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>HOTARU 3 - assembly</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: #12110f; }
+  #root {
+    width: 100%; height: 100%; position: relative; overflow: hidden;
+    background: #12110f; color: #f2ede4;
+    font-family: "IBM Plex Mono", monospace;
+  }
+  .layer { position: absolute; inset: 0; }
+  #glow {
+    position: absolute; left: 820px; top: 70px; width: 1000px; height: 900px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255,178,63,.20), rgba(255,178,63,.07) 55%,
+                                rgba(255,178,63,0) 100%);
+  }
+  #scene { position: absolute; inset: 0; width: 1920px; height: 1080px; display: block; }
+  #rule { position: absolute; left: 760px; top: 96px; width: 2px; height: 888px;
+          background: rgba(242,237,228,.16); }
+  #meta {
+    position: absolute; left: 96px; bottom: 46px;
+    font-size: 18px; letter-spacing: .14em; color: #b4ac9f; text-transform: uppercase;
+  }
+  #leader { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: visible; }
+
+  #panel {
+    position: absolute; left: 96px; top: 84px; width: 620px; height: 912px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .brand { font-size: 20px; letter-spacing: .3em; color: #ffb23f; font-weight: 700;
+           text-transform: uppercase; }
+  /* fixed, not flowed: the leader starts at the title, and measuring the DOM
+     from a seek callback is order-dependent */
+  #stepbox { position: absolute; left: 0; top: 230px; width: 620px;
+             display: flex; flex-direction: column; gap: 22px; }
+  #where { font-size: 21px; letter-spacing: .16em; color: #b4ac9f; text-transform: uppercase; }
+  #where b { color: #ffb23f; font-weight: 700; }
+  #title { font-family: "Oswald", sans-serif; font-weight: 600; font-size: 76px;
+           line-height: 1.02; letter-spacing: -.01em; color: #f2ede4; max-width: 620px; }
+  #body { font-size: 25px; line-height: 1.5; color: #c9c1b4; max-width: 610px; }
+  #chips { display: flex; flex-wrap: wrap; gap: 12px; min-height: 48px; }
+  .chip { display: block; font-size: 20px; line-height: 1; padding: 12px 16px 11px;
+          border: 2px solid rgba(255,178,63,.75); color: #f2ede4; border-radius: 3px;
+          letter-spacing: .03em; }
+  .chip.tool { border-color: rgba(242,237,228,.38); color: #c9c1b4; }
+
+  #tally { display: flex; flex-direction: column; gap: 16px; }
+  #counts { display: flex; gap: 0; }
+  .cnt { display: block; width: 124px; padding-right: 14px; }
+  .cnt .k { display: block; font-size: 18px; letter-spacing: .1em; color: #b4ac9f; }
+  .cnt .v { display: block; font-family: "Oswald", sans-serif; font-weight: 500;
+            font-size: 40px; line-height: 1.1; color: #f2ede4; }
+  .cnt .v i { font-style: normal; color: #8f887c; font-size: 26px; }
+  #bar { position: relative; width: 620px; height: 4px; background: rgba(242,237,228,.14); }
+  #barfill { display: block; width: 620px; height: 4px; background: #ffb23f;
+             transform-origin: 0 50%; }
+  .tick { position: absolute; top: -6px; width: 2px; height: 16px; background: rgba(242,237,228,.4); }
+
+  .card { position: absolute; left: 96px; top: 330px; width: 760px; }
+  .card .kick { font-size: 22px; letter-spacing: .3em; color: #ffb23f; font-weight: 700;
+                text-transform: uppercase; margin-bottom: 26px; }
+  .card h1 { font-family: "Oswald", sans-serif; font-weight: 700; font-size: 112px;
+             line-height: 1.0; letter-spacing: -.015em; margin-bottom: 30px; color: #f2ede4; }
+  .card p { font-size: 27px; line-height: 1.5; color: #c9c1b4; max-width: 700px; }
+  #dip { position: absolute; inset: 0; background: #12110f; opacity: 0; }
+</style>
+</head>
+<body>
+<!--
+  HOTARU 3 - the build, every part and every M3 bolt and nut.
+
+  The geometry is the project's SolidWorks CAD (sw/h3_video.py writes
+  assets/hotaru3.glb and assets/steps.json). Each part comes in along the
+  path sw/h3_insert.py checked for interference; bolts come in along their
+  own axis, nuts from their pocket's mouth.
+
+  Seek safety: nothing reads a clock. One paused GSAP timeline drives a
+  plain time value and its onUpdate renders the frame for exactly that time,
+  so scrub, snapshot and render land on the same pixels. The GLB and steps
+  are fetched (same-origin, local files) BEFORE the timeline is registered.
+-->
+<div data-hf-id="hf-lezb" id="root" data-composition-id="hotaru3-assembly" data-start="0" data-duration="216.6" data-width="1920" data-height="1080">
+
+  <div data-hf-id="hf-gkkj" id="bg" class="layer clip" data-start="0" data-duration="216.6" data-track-index="0">
+    <div data-hf-id="hf-27c6" id="glow"></div>
+  </div>
+
+  <canvas data-hf-id="hf-y0ct" id="scene" class="clip" width="1920" height="1080" data-layout-allow-overflow data-start="0" data-duration="216.6" data-track-index="1"></canvas>
+
+  <div data-hf-id="hf-ain3" id="hud" class="layer clip" data-start="0" data-duration="216.6" data-track-index="2">
+    <div data-hf-id="hf-8e4z" id="rule"></div>
+    <svg data-hf-id="hf-gzyj" id="leader" viewBox="0 0 1920 1080">
+      <path data-hf-id="hf-25yv" id="lead-path" d="M0 0" fill="none" stroke="#ffb23f" stroke-width="2.5" />
+      <circle data-hf-id="hf-ylef" id="lead-ring" cx="0" cy="0" r="13" fill="none" stroke="#ffb23f" stroke-width="2.5" />
+      <circle data-hf-id="hf-7ivi" id="lead-dot" cx="0" cy="0" r="4" fill="#ffb23f" />
+    </svg>
+    <div data-hf-id="hf-o194" id="meta">SolidWorks CAD · every path checked, 2 mm at a time</div>
+    <div data-hf-id="hf-zk0l" id="panel">
+      <div data-hf-id="hf-dxlk" class="brand">Hotaru 3 · assembly</div>
+      <div data-hf-id="hf-dyt2" id="stepbox">
+        <div data-hf-id="hf-9lc8" id="where"><b data-hf-id="hf-447u" id="step-n">01</b> / <span data-hf-id="hf-t0us" id="step-total">36</span> · <span data-hf-id="hf-yj7x" id="chapter">The base</span></div>
+        <div data-hf-id="hf-ry3x" id="title">Before you start</div>
+        <div data-hf-id="hf-68g5" id="body">Body</div>
+        <div data-hf-id="hf-f8d2" id="chips"></div>
+      </div>
+      <div data-hf-id="hf-65n5" id="tally">
+        <div data-hf-id="hf-08ml" id="counts">
+          <div data-hf-id="hf-crwh" class="cnt"><span data-hf-id="hf-r6o8" class="k">M3x8</span><span data-hf-id="hf-kxm5" class="v" id="c-M3x8">0<i data-hf-id="hf-wbk8">/1</i></span></div>
+          <div data-hf-id="hf-mh5h" class="cnt"><span data-hf-id="hf-m215" class="k">M3x10</span><span data-hf-id="hf-3td2" class="v" id="c-M3x10">0<i data-hf-id="hf-ewvc">/29</i></span></div>
+          <div data-hf-id="hf-no2k" class="cnt"><span data-hf-id="hf-mun7" class="k">M3x12</span><span data-hf-id="hf-d5y0" class="v" id="c-M3x12">0<i data-hf-id="hf-kssu">/12</i></span></div>
+          <div data-hf-id="hf-n9rj" class="cnt"><span data-hf-id="hf-l9f3" class="k">M3x16</span><span data-hf-id="hf-mwck" class="v" id="c-M3x16">0<i data-hf-id="hf-tjf1">/6</i></span></div>
+          <div data-hf-id="hf-ogom" class="cnt"><span data-hf-id="hf-irbo" class="k">NUTS</span><span data-hf-id="hf-c1ff" class="v" id="c-M3-nut">0<i data-hf-id="hf-obnl">/35</i></span></div>
+        </div>
+        <div data-hf-id="hf-2to0" id="bar"><span data-hf-id="hf-b0li" id="barfill"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div data-hf-id="hf-8scg" id="intro" class="card clip" data-start="0" data-duration="7" data-track-index="3">
+    <div data-hf-id="hf-unvb" class="kick">Hotaru 3 · assembly</div>
+    <h1 data-hf-id="hf-wfh0">Every part. Every bolt.</h1>
+    <p data-hf-id="hf-hsz8">48 M3 bolts, 35 M3 nuts, zero heat-set inserts. A bolt either runs into a hex nut
+       sitting in a printed pocket, or cuts its own thread in a 2.6 mm pilot hole.</p>
+  </div>
+
+  <div data-hf-id="hf-qk1k" id="outro" class="card clip" data-start="207.6" data-duration="9" data-track-index="3">
+    <div data-hf-id="hf-4hd6" class="kick">Done</div>
+    <h1 data-hf-id="hf-b0gc">Built.</h1>
+    <p data-hf-id="hf-f8ud">48 bolts, 35 nuts, 4 servos, 4 hand cuts and no reprints. Every part's way in was
+       checked in SolidWorks for collisions, 2 mm at a time.</p>
+  </div>
+
+  <div data-hf-id="hf-oq9d" id="dipwrap" class="layer clip" data-start="0" data-duration="216.6" data-track-index="4">
+    <div data-hf-id="hf-c6yo" id="dip"></div>
+  </div>
+
+  <audio data-hf-id="hf-wepz" id="bgm-a" src="assets/bgm/track.wav" data-start="0" data-duration="86" data-volume="0.8" data-track-index="5" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:1},{&quot;t&quot;:84,&quot;v&quot;:1},{&quot;t&quot;:86,&quot;v&quot;:0}]}]}"></audio>
+  <audio data-hf-id="hf-y6hh" id="bgm-b" src="assets/bgm/track.wav" data-start="84" data-duration="86" data-volume="0.8" data-track-index="6" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0},{&quot;t&quot;:2,&quot;v&quot;:1},{&quot;t&quot;:84,&quot;v&quot;:1},{&quot;t&quot;:86,&quot;v&quot;:0}]}]}"></audio>
+  <audio data-hf-id="hf-hegb" id="bgm-c" src="assets/bgm/track.wav" data-start="168" data-duration="48.6" data-volume="0.8" data-track-index="7" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0},{&quot;t&quot;:2,&quot;v&quot;:1},{&quot;t&quot;:45.6,&quot;v&quot;:1},{&quot;t&quot;:48.6,&quot;v&quot;:0}]}]}"></audio>
+</div>
+
+<script type="module">
+  import { M4, loadGLB, makeGL } from "./assets/gl.js";
+
+  const ID = "hotaru3-assembly";
+  const cv = document.getElementById("scene");
+  const { gl, prog, U } = makeGL(cv);
+
+  const [glb, D] = await Promise.all([
+    loadGLB("./assets/hotaru3.glb"),
+    fetch("./assets/steps.json").then(r => r.json()),
+  ]);
+  const DUR = D.duration, INTRO = D.intro, END = D.body_end;
+  const ACCENT = [1.0, 0.70, 0.25], CUT = [1.0, 0.36, 0.20];
+
+  // ---------------------------------------------------------- meshes --
+  const parts = glb.map(n => {
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, n.pos, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, n.idx, gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
+    const info = D.nodes[n.name];
+    return { name: n.name, vao, count: n.idx.length,
+             itype: n.idx instanceof Uint16Array ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT,
+             color: n.color, kind: info.kind, group: info.group,
+             moves: [], hide: D.hide[n.name] ?? Infinity, first: Infinity };
+  });
+  const byName = new Map(parts.map(p => [p.name, p]));
+  for (const m of D.moves) {
+    const p = byName.get(m.n);
+    // arc lengths along the polyline, for constant-speed travel
+    const L = [0];
+    for (let k = 1; k < m.p.length; k++)
+      L.push(L[k-1] + Math.hypot(m.p[k][0]-m.p[k-1][0], m.p[k][1]-m.p[k-1][1], m.p[k][2]-m.p[k-1][2]));
+    m.L = L;
+    p.moves.push(m);
+    p.first = Math.min(p.first, m.t0);
+  }
+  parts.forEach(p => p.moves.sort((a, b) => a.t0 - b.t0));
+
+  const ease = (e, u) => e === "in" ? u * u * u
+                       : e === "inout" ? (u < .5 ? 4*u*u*u : 1 - Math.pow(-2*u + 2, 3) / 2)
+                       : 1 - Math.pow(1 - u, 3);
+  function along(m, u) {
+    const tot = m.L[m.L.length - 1];
+    if (tot === 0) return m.p[m.p.length - 1];
+    const s = u * tot;
+    let k = 1;
+    while (k < m.L.length - 1 && m.L[k] < s) k++;
+    const seg = m.L[k] - m.L[k-1] || 1, f = (s - m.L[k-1]) / seg;
+    return [0,1,2].map(i => m.p[k-1][i] + (m.p[k][i] - m.p[k-1][i]) * f);
+  }
+
+  /* where a node is at time t, how far its bolt has turned, how hot it glows */
+  function stateAt(p, t) {
+    let off = [0, 0, 0], spin = null, ang = 0, hot = 0, cut = 0;
+    for (const m of p.moves) {
+      if (t < m.t0) break;
+      const dur = m.t1 - m.t0;
+      const u = dur <= 0 ? 1 : Math.min(1, (t - m.t0) / dur);
+      off = u >= 1 ? m.p[m.p.length - 1] : along(m, ease(m.e, u));
+      if (m.spin) { spin = m.spin; ang = m.spin[6] * 360 * ease("inout", u); }
+      if (dur > 0) {
+        if (m.cut) {
+          // a hand cut: the piece pulses red, then lifts away
+          if (u < 1) cut = 0.65 + 0.35 * Math.sin(u * Math.PI * 6);
+        } else {
+          const after = t - m.t1;
+          hot = after < 0 ? 1 : Math.max(hot, 1 - after / 0.8);
+        }
+      }
+    }
+    return { off, spin, ang, hot, cut };
+  }
+
+  // ----------------------------------------------------------- poses --
+  // The finale runs the arm through checked poses. Joint axes in the GLB
+  // frame: pan about Z, the rest about X lines through the joints.
+  const J = D.joints;
+  // only poses h3_assembly checks for interference: neutral, look-up, curious
+  const POSE = [[0, 0,0,0,0], [2.6, 0,10,30,-70], [5.4, 35,45,75,-20], [9.0, 35,45,75,-20]];
+  function poseAt(u) {
+    let k = 0;
+    while (k < POSE.length - 2 && POSE[k+1][0] <= u) k++;
+    const a = POSE[k], b = POSE[k+1];
+    const f = Math.max(0, Math.min(1, (u - a[0]) / (b[0] - a[0])));
+    const s = f * f * (3 - 2 * f);
+    return [1,2,3,4].map(i => a[i] + (b[i] - a[i]) * s);
+  }
+  function groups(pose) {
+    const [pan, sh, el, hd] = pose, X = [1, 0, 0];
+    const turret = M4.rot(pan, 0, 0, 1);
+    const l1 = M4.mul(turret, M4.rotAbout(sh, X, J.p));
+    const l2 = M4.mul(l1, M4.rotAbout(el, X, J.e));
+    return { base: M4.id(), turret,
+             pinion: M4.mul(turret, M4.rotAbout(-J.ratio * sh, X, J.shaft)),
+             link1: l1, link2: l2, shade: M4.mul(l2, M4.rotAbout(hd, X, J.h)) };
+  }
+
+  // ---------------------------------------------------------- camera --
+  // the 3D view owns the frame right of the rule; nothing is drawn behind the text
+  const VX = 780, VW = 1920 - VX;
+  const FOV = 0.56, ASPECT = VW / cv.height;
+  const steps = D.steps;
+  // the finished lamp, for the intro and the finale
+  const all = { lo: [1e9,1e9,1e9], hi: [-1e9,-1e9,-1e9] };
+  for (const n of glb) {
+    if (n.name.startsWith("chip-")) continue;
+    for (let i = 0; i < n.pos.length; i += 3)
+      for (let k = 0; k < 3; k++) {
+        all.lo[k] = Math.min(all.lo[k], n.pos[i+k]); all.hi[k] = Math.max(all.hi[k], n.pos[i+k]);
+      }
+  }
+  const WHOLE = { tgt: [0,1,2].map(k => (all.lo[k] + all.hi[k]) / 2),
+                  dist: (all.hi[2] - all.lo[2]) / (2 * Math.tan(FOV / 2)) * 1.12,
+                  az: 150, el: 16 };
+  const smooth = u => { u = Math.max(0, Math.min(1, u)); return u * u * (3 - 2 * u); };
+  const lerp = (a, b, f) => a + (b - a) * f;
+  const lerpAng = (a, b, f) => { let d = ((b - a + 540) % 360) - 180; return a + d * f; };
+  function mixCam(a, b, f) {
+    return { tgt: [0,1,2].map(k => lerp(a.tgt[k], b.tgt[k], f)),
+             dist: Math.exp(lerp(Math.log(a.dist), Math.log(b.dist), f)),
+             az: lerpAng(a.az, b.az, f), el: lerp(a.el, b.el, f) };
+  }
+  function stepIndex(t) {
+    let i = 0;
+    while (i < steps.length - 1 && steps[i + 1].t0 <= t) i++;
+    return i;
+  }
+  function camAt(t) {
+    if (t < INTRO) return { ...WHOLE, az: WHOLE.az - 30 + 40 * (t / INTRO) };
+    if (t >= END) {
+      const u = smooth((t - END) / 1.6);
+      const last = steps[steps.length - 1].cam;
+      // the poses reach forward and fold down: frame wider and a little lower
+      const fin = { ...WHOLE, dist: WHOLE.dist * 1.4, el: 20,
+                    tgt: [WHOLE.tgt[0], WHOLE.tgt[1], WHOLE.tgt[2] - 0.12 * (all.hi[2] - all.lo[2])],
+                    az: WHOLE.az - 15 + 20 * ((t - END) / (DUR - END)) };
+      return mixCam(last, fin, u);
+    }
+    const i = stepIndex(t), s = steps[i];
+    const prev = i === 0 ? { ...WHOLE, az: WHOLE.az + 10 } : steps[i - 1].cam;
+    const f = smooth((t - s.t0) / Math.min(1.5, 0.38 * (s.t1 - s.t0)));
+    return mixCam(prev, s.cam, f);
+  }
+
+  // ------------------------------------------------------------- hud --
+  const $ = id => document.getElementById(id);
+  $("step-total").textContent = String(steps.length);
+  const chapters = [];
+  steps.forEach((s, i) => { if (!chapters.length || chapters[chapters.length-1].name !== s.chapter)
+                              chapters.push({ name: s.chapter, i }); });
+  const span = END - INTRO;
+  for (const c of chapters.slice(1)) {
+    const d = document.createElement("span");
+    d.className = "tick";
+    d.style.left = (620 * (steps[c.i].t0 - INTRO) / span - 1).toFixed(1) + "px";
+    $("bar").appendChild(d);
+  }
+  const TOTAL = { "M3x8": 1, "M3x10": 29, "M3x12": 12, "M3x16": 6, "M3-nut": 35 };
+  const hwParts = parts.filter(p => TOTAL[p.kind] !== undefined);
+  let shown = -1;
+  const titleY = 84 + 230 + 32 + 22 + 38;      // panel top + stepbox + "where" line + gap + half a title line
+  function hudAt(t) {
+    const i = stepIndex(t), s = steps[i];
+    if (i !== shown) {
+      shown = i;
+      $("step-n").textContent = String(i + 1).padStart(2, "0");
+      $("chapter").textContent = s.chapter.toLowerCase() + (s.bench ? " · on the bench" : "");
+      $("title").textContent = s.title;
+      $("body").textContent = s.body;
+      $("chips").innerHTML = s.chips.map(c => {
+        const tool = /cutter|knife|saw|firmware|only if|keep the/.test(c);
+        return `<span class="chip${tool ? " tool" : ""}">${c}</span>`;
+      }).join("");
+    }
+    // each step's text eases in and out with it
+    const a = t < INTRO ? 0 : smooth((t - s.t0) / 0.45) * (t >= END ? 0 : smooth((s.t1 - t) / 0.3));
+    const box = $("stepbox");
+    box.style.opacity = a.toFixed(3);
+    box.style.transform = `translateY(${((1 - a) * 18).toFixed(1)}px)`;
+    const used = {};
+    for (const p of hwParts) {
+      const m = p.moves[p.moves.length - 1];
+      if (m && t >= m.t1) used[p.kind] = (used[p.kind] || 0) + 1;
+    }
+    for (const k in TOTAL) $("c-" + k).innerHTML = `${used[k] || 0}<i>/${TOTAL[k]}</i>`;
+    const prog = t < INTRO ? 0 : Math.min(1, (t - INTRO) / span);
+    $("barfill").style.transform = `scaleX(${prog.toFixed(4)})`;
+    const panelOn = t < INTRO - 0.4 ? 0 : t > END + 0.6 ? 0 : 1;
+    $("panel").style.opacity = String(Math.min(panelOn, smooth((t - INTRO + 0.4) / 0.6),
+                                               smooth((END + 0.6 - t) / 0.6)));
+    return { i, s, a };
+  }
+
+  // ---------------------------------------------------------- render --
+  const COL = new Float32Array(3);
+  function renderAt(t) {
+    const cam = camAt(t);
+    cam.az += 4 * Math.sin(t * 0.23);              // a slow sway, so no frame is dead still
+    const eye = [cam.tgt[0] + cam.dist * Math.cos(cam.el * Math.PI/180) * Math.sin(cam.az * Math.PI/180),
+                 cam.tgt[1] + cam.dist * Math.cos(cam.el * Math.PI/180) * Math.cos(cam.az * Math.PI/180),
+                 cam.tgt[2] + cam.dist * Math.sin(cam.el * Math.PI/180)];
+    const V = M4.look(eye, cam.tgt, [0, 0, 1]);
+    const P = M4.persp(FOV, ASPECT, 4, 9000);
+    const G = t >= END + 1.2 ? groups(poseAt(t - END - 1.2)) : null;
+    // on a bench step only the bench is shown: the lamp behind it confused the shot
+    const bench = t >= INTRO && t < END && steps[stepIndex(t)].bench;
+
+    gl.viewport(0, 0, cv.width, cv.height);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.viewport(VX, 0, VW, cv.height);
+    gl.useProgram(prog);
+    for (const p of parts) {
+      // the intro shows the finished lamp; the build starts from the tub
+      const intro = t < INTRO;
+      if (intro ? p.name.startsWith("chip-") : (t < p.first || t >= p.hide)) continue;
+      const st = intro ? { off: [0,0,0], spin: null, ang: 0, hot: 0, cut: 0 } : stateAt(p, t);
+      if (bench && Math.hypot(st.off[0], st.off[1], st.off[2]) < 1) continue;
+      let m = M4.trans(st.off[0], st.off[1], st.off[2]);
+      if (st.spin && st.ang) m = M4.mul(m, M4.rotAbout(st.ang, st.spin, st.spin.slice(3, 6)));
+      if (G) m = M4.mul(G[p.group], m);
+      const mv = M4.mul(V, m);
+      gl.uniformMatrix4fv(U.mv, false, mv);
+      gl.uniformMatrix4fv(U.mvp, false, M4.mul(P, mv));
+      const tint = st.cut ? CUT : ACCENT, k = st.cut ? st.cut : st.hot * 0.75;
+      for (let c = 0; c < 3; c++) COL[c] = p.color[c] + (tint[c] - p.color[c]) * k;
+      gl.uniform3fv(U.col, COL);
+      gl.bindVertexArray(p.vao);
+      gl.drawElements(gl.TRIANGLES, p.count, p.itype, 0);
+    }
+    gl.bindVertexArray(null);
+
+    const h = hudAt(t);
+    // the leader runs from the step's text to what is moving
+    const q = M4.apply(M4.mul(P, V), h.s.pin);
+    const px = VX + (q[0] * 0.5 + 0.5) * VW, py = (1 - (q[1] * 0.5 + 0.5)) * 1080;
+    const ok = q[3] > 0 && px > 800 && px < 1880 && py > 40 && py < 1040;
+    const la = ok ? h.a : 0;
+    const ty = titleY;
+    $("lead-path").setAttribute("d", `M ${730} ${ty} H ${790} L ${px.toFixed(1)} ${py.toFixed(1)}`);
+    $("lead-ring").setAttribute("cx", px.toFixed(1)); $("lead-ring").setAttribute("cy", py.toFixed(1));
+    $("lead-dot").setAttribute("cx", px.toFixed(1)); $("lead-dot").setAttribute("cy", py.toFixed(1));
+    $("leader").style.opacity = la.toFixed(3);
+  }
+
+  const state = { t: 0 };
+  const tl = gsap.timeline({ paused: true });
+  tl.to(state, { t: DUR, duration: DUR, ease: "none", onUpdate: () => renderAt(state.t) }, 0);
+  tl.to("#glow", { scale: 1.08, duration: 6, ease: "sine.inOut", yoyo: true,
+                   repeat: Math.max(0, Math.floor(DUR / 6) - 1) }, 0);
+  tl.fromTo("#intro .kick", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .6, ease: "power2.out" }, .3)
+    .fromTo("#intro h1", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .8, ease: "expo.out" }, .5)
+    .fromTo("#intro p", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: .7, ease: "power3.out" }, .9)
+    .to("#intro .kick, #intro h1, #intro p", { opacity: 0, y: -16, duration: .5, ease: "power2.in",
+                                               stagger: .05 }, INTRO - .9);
+  tl.fromTo("#dip", { opacity: 0 }, { opacity: 1, duration: .35, ease: "power1.in" }, INTRO - .35)
+    .to("#dip", { opacity: 0, duration: .5, ease: "power1.out" }, INTRO);
+  tl.fromTo("#outro .kick", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .6, ease: "power2.out" }, END + .6)
+    .fromTo("#outro h1", { opacity: 0, scale: .94 }, { opacity: 1, scale: 1, duration: .9, ease: "back.out(1.6)" }, END + .8)
+    .fromTo("#outro p", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: .7, ease: "power3.out" }, END + 1.2);
+  renderAt(0);
+  window.__timelines[ID] = tl;
+  window.__hfForceTimelineRebind?.();
+</script>
+</body>
+</html>

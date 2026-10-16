@@ -125,6 +125,47 @@ def allowed(pose):
     return True, "ok"
 
 
+# ------------------------------------------------------------ path check ---
+# The firmware moves every joint on the same stretched trapezoid, so a move
+# is a straight line in joint space. Checking only its END pose is not
+# enough: the button pod is fixed to the base while the arm pans, so an arm
+# folded back low can be clear of the pod at pan -60 and at pan +60 and
+# still sweep through it at pan 0 on the way. Mirrors pathClear() / plan()
+# in hotaru_motion.ino.
+PATH_STEP = 2.0          # deg of the biggest joint change between samples
+CARRY_ARM = (0.0, 0.0, 0.0)   # arm straight up: 114 mm from every keep-out
+
+
+def path_samples(a, b, step=PATH_STEP):
+    d = max(abs(y - x) for x, y in zip(a, b))
+    n = max(1, math.ceil(d / step))
+    return [tuple(x + (y - x) * k / n for x, y in zip(a, b)) for k in range(1, n + 1)]
+
+
+def path_clear(a, b):
+    """Every sample clear -- or, from a start already inside a keep-out,
+    never deeper than the start."""
+    floor = min(M, clearance(*a))
+    return all(clearance(*p) >= floor for p in path_samples(a, b))
+
+
+def plan(cur, tgt):
+    """Waypoints from `cur` to `tgt`, every leg a straight joint-space move
+    that path_clear() passes, or None. Tried in order: straight there; arm
+    first, then pan; pan first, then arm; lift the arm upright, pan, lower."""
+    cur, tgt = tuple(cur), tuple(tgt)
+    carry0 = (cur[0],) + CARRY_ARM
+    carry1 = (tgt[0],) + CARRY_ARM
+    for route in ([tgt],
+                  [(cur[0],) + tgt[1:], tgt],
+                  [(tgt[0],) + cur[1:], tgt],
+                  [carry0, carry1, tgt]):
+        legs = [cur] + route
+        if all(path_clear(legs[i], legs[i + 1]) for i in range(len(route))):
+            return route
+    return None
+
+
 # ----------------------------------------------------------------- tools ---
 def emit():
     import h3_assembly as A

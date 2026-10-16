@@ -33,6 +33,9 @@ if __name__ == "__main__":
     h3_torque.main()
     print("== 4. guard vs SolidWorks", flush=True)
     missed = h3_guard.validate(40, record=rec)
+    print("== 4b. pan sweep: the base through its whole range", flush=True)
+    import h3_pan_sweep
+    missed = h3_pan_sweep.main() or missed
     if rec:
         print("== 5. timelapse", flush=True)
         out = L.timelapse(frames, os.path.join(h3_build.REC, "hotaru3-timelapse.mp4"))

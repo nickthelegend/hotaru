@@ -54,6 +54,24 @@ Run `python sw/h3_all.py` to repeat all of it.
   SolidWorks found all 38 collision-free. It refused 2: one really collides,
   the other is clear (the guard errs on the safe side). **0 misses.**
   `solidworks/guard_report.json`.
+* **The base turning, whole range** (`python sw/h3_pan_sweep.py`,
+  `solidworks/pan_report.json`, 1350 poses in SolidWorks). The MX pod is the
+  one fixed part above the turntable, so it is what a panning arm can hit.
+  * 23 arm configurations × pan −90…+90° in 5° steps (851 poses). The guard
+    allowed 785 of them; **SolidWorks found 0 of those interfering**. Every
+    preset pose is clear at every pan angle.
+  * The old firmware guarded only a move's END pose. Panning from −60° to
+    +60° with the arm folded back low was allowed, and SolidWorks shows the
+    shade going through the keycap and switch on the way (7 of the sampled
+    poses). The firmware now checks the whole path and goes round:
+    arm up, pan, arm down. **Every planned route and every button/demo move:
+    0 interferences.**
+  * `node firmware/sim/sim.mjs` runs the firmware's own motion code off the
+    board (LLVM clang → WebAssembly): the pod routes, the button cycle, a
+    new command mid-pan, and 5000 random targets. No frame enters a
+    keep-out.
+  * The pan servo now engages last at power-up, after the arm is back at
+    rest, so a drooped arm is never swung across the pod.
 * **Firmware**: clang syntax/type check with `-Wall -Wextra`, clean. The
   motion planner was simulated: joints arrive together, 0° overshoot, peak
   speed exactly at the 90°/s limit. It has **not** been flashed to a board

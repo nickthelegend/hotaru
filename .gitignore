@@ -18,3 +18,15 @@ videos/*/node_modules/
 sw/.sw_pid
 sw/_selftest/
 solidworks/parts/~$*
+
+# lamp firmware keys and Wi-Fi: compiled in, never committed
+firmware/hotaru/secrets.h
+
+# HOTARU 3 video project scratch: preview snapshots, mesh exports (sw/h3_video.py stl), Studio caches
+videos/*/snapshots*/
+videos/*/build/
+videos/*/.hyperframes/
+videos/*/.thumbnails/
+videos/*/.waveform-cache/
+# Bambu Studio CLI output
+/result.json

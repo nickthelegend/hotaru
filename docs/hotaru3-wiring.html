@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{margin:0}</style>
+</head>
+<body>
+<title>HOTARU 3 Wiring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  /* Layout: a bench reference sheet. One schematic up top, then the tables
+     you check pin by pin with a soldering iron in your hand. */
+  :root {
+    --bg: #f3f5f2;
+    --panel: #ffffff;
+    --fg: #18201c;
+    --muted: #56625b;
+    --line: #d3dad4;
+    --accent: #23704f;         /* solder-mask green */
+    --accent-soft: #e1efe7;
+    --warn: #a4511a;
+    --warn-soft: #f8eadf;
+    --w-5v: #c8322b;
+    --w-gnd: #5b625e;
+    --w-3v3: #d17a12;
+    --w-sda: #2563c9;
+    --w-scl: #7a46c4;
+    --w-sig: #0d8a83;
+    --w-i2s: #2f8f3a;
+    --w-spk: #9a6b17;
+    --box: #ffffff;
+    --box-edge: #9aa69f;
+    --font-display: "IBM Plex Sans Condensed", "Arial Narrow", sans-serif;
+    --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111614; --panel: #18201c; --fg: #e3ebe6; --muted: #9aa8a0; --line: #2c3631;
+      --accent: #63c194; --accent-soft: #1d3329; --warn: #ec9a5f; --warn-soft: #3a2619;
+      --w-5v: #ff6b62; --w-gnd: #a3aca7; --w-3v3: #f5a443; --w-sda: #6aa2ff; --w-scl: #b48cff;
+      --w-sig: #3cc9bf; --w-i2s: #6fd17a; --w-spk: #e0b25a; --box: #1b2420; --box-edge: #4f5c55;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111614; --panel: #18201c; --fg: #e3ebe6; --muted: #9aa8a0; --line: #2c3631;
+    --accent: #63c194; --accent-soft: #1d3329; --warn: #ec9a5f; --warn-soft: #3a2619;
+    --w-5v: #ff6b62; --w-gnd: #a3aca7; --w-3v3: #f5a443; --w-sda: #6aa2ff; --w-scl: #b48cff;
+    --w-sig: #3cc9bf; --w-i2s: #6fd17a; --w-spk: #e0b25a; --box: #1b2420; --box-edge: #4f5c55;
+    color-scheme: dark;
+  }
+
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-body);
+         font-size: 16px; line-height: 1.55; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px;
+          display: flex; flex-direction: column; gap: 44px; }
+  header { display: flex; flex-direction: column; gap: 10px; }
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
+             text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(34px, 6vw, 52px);
+       line-height: 1.02; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { max-width: 68ch; color: var(--muted); margin: 0; }
+  .lede code, p code, li code, td code { font-family: var(--font-mono); font-size: .9em;
+       background: var(--accent-soft); color: var(--fg); padding: 1px 5px; border-radius: 3px; }
+  h2 { font-family: var(--font-display); font-weight: 600; font-size: 26px; margin: 0;
+       letter-spacing: -.005em; text-wrap: balance; }
+  section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .sub { color: var(--muted); margin: 0; max-width: 72ch; }
+
+  figure { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+           display: flex; flex-direction: column; min-width: 0; }
+  .scroll { overflow-x: auto; }
+  .scroll svg { display: block; width: 100%; min-width: 900px; height: auto; }
+  figcaption { border-top: 1px solid var(--line); padding: 12px 16px; display: flex;
+               flex-wrap: wrap; gap: 8px 18px; font-family: var(--font-mono); font-size: 12px;
+               color: var(--muted); }
+  .key { display: inline-flex; align-items: center; gap: 7px; }
+  .key i { display: block; width: 22px; height: 3px; border-radius: 2px; }
+
+  svg text { font-family: var(--font-mono); fill: var(--fg); }
+  svg .bx { fill: var(--box); stroke: var(--box-edge); stroke-width: 1.5; }
+  svg .hd { font-family: var(--font-display); font-weight: 600; font-size: 17px; }
+  svg .pn { font-size: 11.5px; }
+  svg .nt { font-size: 11px; fill: var(--muted); }
+  svg .w { fill: none; stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; }
+  svg .dot { stroke: none; }
+  .w5 { stroke: var(--w-5v); } .wg { stroke: var(--w-gnd); } .w3 { stroke: var(--w-3v3); }
+  .wa { stroke: var(--w-sda); } .wc { stroke: var(--w-scl); } .ws { stroke: var(--w-sig); }
+  .wi { stroke: var(--w-i2s); } .wk { stroke: var(--w-spk); }
+  .f5 { fill: var(--w-5v); } .fg { fill: var(--w-gnd); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .tablebox { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase;
+       color: var(--muted); font-weight: 600; background: var(--bg); }
+  tr:last-child td { border-bottom: 0; }
+  td.pin { font-family: var(--font-mono); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  tr.part td { background: var(--accent-soft); font-family: var(--font-display); font-weight: 600;
+               font-size: 15.5px; padding-block: 7px; }
+
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+          padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .card.alert { border-color: var(--warn); }
+  .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 18px; margin: 0; }
+  .card ul, .card ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 7px; }
+  footer { color: var(--muted); font-size: 13.5px; max-width: 80ch; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">HOTARU 3 · electronics</div>
+    <h1>HOTARU 3 Wiring</h1>
+    <p class="lede">Everything that lives in the tub, and what connects to what, exactly as the HOTARU 3
+      firmware expects it (<code>firmware/hotaru/config.h</code>). Hold the button and talk: the lamp
+      answers out loud and acts the answer out.</p>
+  </header>
+
+  <section aria-labelledby="sch">
+    <h2 id="sch">Schematic</h2>
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 1120 690" role="img" aria-label="Wiring diagram: a separate 5 V supply feeds the PCA9685 servo rail; the ESP32-S3 runs from its own USB-C; all grounds join. The ESP32 drives the PCA9685 over I2C on GPIO 8 and 9; four servos on PCA9685 channels 0 to 3; button on GPIO 4; microphone on GPIO 5, 6, 7; amplifier on GPIO 15, 16, 17; LED ring on GPIO 18.">
+          <!-- the servo supply -->
+          <rect class="bx" x="20" y="268" width="150" height="104" rx="6"/>
+          <text class="hd" x="34" y="294">Servo supply</text>
+          <text class="nt" x="34" y="314">5 V, 3 A or more</text>
+          <text class="pn" x="140" y="304" text-anchor="end">+</text>
+          <text class="pn" x="140" y="344" text-anchor="end">−</text>
+
+          <!-- + goes ONLY to the V+ terminal; − joins everything -->
+          <path class="w w5" d="M170 300 H230 V20 H880"/>
+          <path class="w w5" d="M750 20 V90"/>
+          <circle class="dot f5" cx="750" cy="20" r="4.5"/>
+          <path class="w wg" d="M170 340 H360"/>
+          <path class="w wg" d="M200 340 V50 H880"/>
+          <path class="w wg" d="M790 50 V90"/>
+          <circle class="dot fg" cx="200" cy="340" r="4.5"/>
+          <circle class="dot fg" cx="790" cy="50" r="4.5"/>
+          <!-- 2200 uF across the rail, at the terminal -->
+          <path class="w w5" d="M880 20 V29"/>
+          <path class="w wg" d="M880 41 V50"/>
+          <path d="M866 29 H894" stroke="var(--fg)" stroke-width="2.5"/>
+          <path d="M866 41 Q880 35 894 41" fill="none" stroke="var(--fg)" stroke-width="2.5"/>
+          <text class="pn" x="904" y="31">2200 µF</text>
+          <text class="nt" x="904" y="46">+ to V+, stripe to GND</text>
+          <text class="nt" x="240" y="14">5 V servo rail: only to the V+ terminal</text>
+          <text class="nt" x="210" y="44">GND, joined to the ESP32</text>
+
+          <!-- ESP32-S3 -->
+          <rect class="bx" x="360" y="200" width="200" height="460" rx="6"/>
+          <text class="hd" x="460" y="190" text-anchor="middle">ESP32-S3</text>
+          <text class="pn" x="370" y="264">5V</text>
+          <text class="nt" x="370" y="280">from its USB-C</text>
+          <text class="pn" x="370" y="344">GND</text>
+          <g class="pn" text-anchor="end">
+            <text x="550" y="234">3V3</text>
+            <text x="550" y="259">GND</text>
+            <text x="550" y="284">GPIO 8</text>
+            <text x="550" y="309">GPIO 9</text>
+            <text x="550" y="364">GPIO 4</text>
+            <text x="550" y="414">GPIO 5</text>
+            <text x="550" y="436">GPIO 6</text>
+            <text x="550" y="458">GPIO 7</text>
+            <text x="550" y="504">GPIO 15</text>
+            <text x="550" y="526">GPIO 16</text>
+            <text x="550" y="548">GPIO 17</text>
+            <text x="550" y="614">GPIO 18</text>
+          </g>
+          <text class="nt" x="372" y="626">5V pin feeds the amp</text>
+          <text class="nt" x="372" y="640">and the ring; USB-C ports</text>
+          <text class="nt" x="372" y="654">face the tub's windows</text>
+
+          <!-- I2C + logic power to the PCA9685 -->
+          <path class="w w3" d="M560 230 H600 V150 H700"/>
+          <path class="w wg" d="M560 255 H615 V180 H700"/>
+          <path class="w wa" d="M560 280 H630 V210 H700"/>
+          <path class="w wc" d="M560 305 H645 V240 H700"/>
+
+          <!-- PCA9685 -->
+          <rect class="bx" x="700" y="90" width="200" height="200" rx="6"/>
+          <text class="hd" x="800" y="128" text-anchor="middle">PCA9685</text>
+          <text class="nt" x="800" y="276" text-anchor="middle">address 0x40 · 50 Hz</text>
+          <text class="pn" x="742" y="106" text-anchor="end">V+</text>
+          <text class="pn" x="798" y="106">GND</text>
+          <g class="pn">
+            <text x="710" y="154">VCC</text>
+            <text x="710" y="184">GND</text>
+            <text x="710" y="214">SDA</text>
+            <text x="710" y="244">SCL</text>
+          </g>
+          <g class="pn" text-anchor="end">
+            <text x="890" y="154">CH 0</text>
+            <text x="890" y="184">CH 1</text>
+            <text x="890" y="214">CH 2</text>
+            <text x="890" y="244">CH 3</text>
+          </g>
+
+          <!-- servos -->
+          <path class="w ws" d="M900 150 H960"/>
+          <path class="w ws" d="M900 180 H960"/>
+          <path class="w ws" d="M900 210 H960"/>
+          <path class="w ws" d="M900 240 H960"/>
+          <g>
+            <rect class="bx" x="960" y="136" width="150" height="28" rx="4"/>
+            <rect class="bx" x="960" y="166" width="150" height="28" rx="4"/>
+            <rect class="bx" x="960" y="196" width="150" height="28" rx="4"/>
+            <rect class="bx" x="960" y="226" width="150" height="28" rx="4"/>
+            <text class="pn" x="972" y="154">Pan · MG996R</text>
+            <text class="pn" x="972" y="184">Shoulder · MG996R</text>
+            <text class="pn" x="972" y="214">Elbow · MG996R</text>
+            <text class="pn" x="972" y="244">Head · MG996R</text>
+          </g>
+          <text class="nt" x="960" y="274">3-wire lead each:</text>
+          <text class="nt" x="960" y="288">brown GND · red V+ · orange PWM</text>
+
+          <!-- button -->
+          <path class="w ws" d="M560 360 H700"/>
+          <rect class="bx" x="700" y="332" width="200" height="56" rx="6"/>
+          <text class="hd" x="714" y="356">Cherry MX</text>
+          <text class="nt" x="714" y="376">other leg → GND</text>
+          <text class="nt" x="580" y="352">pull-up inside</text>
+
+          <!-- microphone -->
+          <path class="w wi" d="M560 410 H700"/>
+          <path class="w wi" d="M560 432 H700"/>
+          <path class="w wi" d="M560 454 H700"/>
+          <rect class="bx" x="700" y="398" width="200" height="72" rx="6"/>
+          <text class="hd" x="714" y="420">INMP441 mic</text>
+          <text class="pn" x="890" y="414" text-anchor="end">SCK</text>
+          <text class="pn" x="890" y="436" text-anchor="end">WS</text>
+          <text class="pn" x="890" y="458" text-anchor="end">SD</text>
+          <text class="nt" x="714" y="440">VDD → 3V3 · GND</text>
+          <text class="nt" x="714" y="458">L/R → GND</text>
+
+          <!-- amplifier + speaker -->
+          <path class="w wi" d="M560 500 H700"/>
+          <path class="w wi" d="M560 522 H700"/>
+          <path class="w wi" d="M560 544 H700"/>
+          <rect class="bx" x="700" y="488" width="200" height="72" rx="6"/>
+          <text class="hd" x="714" y="510">MAX98357A</text>
+          <text class="pn" x="890" y="504" text-anchor="end">BCLK</text>
+          <text class="pn" x="890" y="526" text-anchor="end">LRC</text>
+          <text class="pn" x="890" y="548" text-anchor="end">DIN</text>
+          <text class="nt" x="714" y="530">VIN → 5V · GND</text>
+          <text class="nt" x="714" y="548">SD, GAIN: leave open</text>
+          <path class="w wk" d="M900 512 H960"/>
+          <path class="w wk" d="M900 536 H960"/>
+          <text class="pn" x="932" y="508" text-anchor="middle">+</text>
+          <text class="pn" x="932" y="532" text-anchor="middle">−</text>
+          <rect class="bx" x="960" y="500" width="150" height="48" rx="6"/>
+          <text class="hd" x="974" y="522">Speaker</text>
+          <text class="nt" x="974" y="540">40 × 20 mm, 4–8 Ω</text>
+
+          <!-- LED ring -->
+          <path class="w ws" d="M560 610 H700"/>
+          <rect class="bx" x="700" y="588" width="200" height="56" rx="6"/>
+          <text class="hd" x="714" y="610">WS2812 ring</text>
+          <text class="nt" x="714" y="630">DIN · 5V · GND</text>
+          <text class="nt" x="580" y="604">DIN</text>
+
+          <text class="nt" x="20" y="684">Lines that cross without a dot are not joined.</text>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="key"><i style="background: var(--w-5v)"></i>5 V servo rail</span>
+        <span class="key"><i style="background: var(--w-gnd)"></i>GND</span>
+        <span class="key"><i style="background: var(--w-3v3)"></i>3V3 logic</span>
+        <span class="key"><i style="background: var(--w-sda)"></i>SDA</span>
+        <span class="key"><i style="background: var(--w-scl)"></i>SCL</span>
+        <span class="key"><i style="background: var(--w-sig)"></i>signal</span>
+        <span class="key"><i style="background: var(--w-i2s)"></i>I²S audio</span>
+        <span class="key"><i style="background: var(--w-spk)"></i>speaker</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section aria-labelledby="pins">
+    <h2 id="pins">Pin by pin</h2>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Pin</th><th>Connects to</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr class="part"><td colspan="3">PCA9685 servo driver</td></tr>
+          <tr><td class="pin">VCC</td><td>ESP32 3V3</td><td>Logic power only</td></tr>
+          <tr><td class="pin">GND</td><td>ESP32 GND</td><td>Common ground, always</td></tr>
+          <tr><td class="pin">SDA</td><td>ESP32 GPIO 8</td><td>I²C at 400 kHz</td></tr>
+          <tr><td class="pin">SCL</td><td>ESP32 GPIO 9</td><td></td></tr>
+          <tr><td class="pin">V+ terminal</td><td>Servo supply +</td><td>5 V, 3 A or more, with the 2200 µF across V+ and GND at this terminal. Nothing else on this rail.</td></tr>
+          <tr><td class="pin">GND terminal</td><td>Servo supply −</td><td>And joined to the ESP32's GND, so servo current goes straight back to its supply</td></tr>
+          <tr><td class="pin">CH 0 – 3</td><td>Pan, shoulder, elbow, head</td><td>See the servo table below</td></tr>
+          <tr><td class="pin">OE, address pads</td><td>Leave open</td><td>The firmware expects address 0x40</td></tr>
+
+          <tr class="part"><td colspan="3">Cherry MX button</td></tr>
+          <tr><td class="pin">leg 1</td><td>ESP32 GPIO 4</td><td>Internal pull-up. Hold to talk, tap for a gesture; held at power-up, the servos stay off</td></tr>
+          <tr><td class="pin">leg 2</td><td>GND</td><td></td></tr>
+
+          <tr class="part"><td colspan="3">INMP441 microphone</td></tr>
+          <tr><td class="pin">SCK</td><td>ESP32 GPIO 5</td><td>I²S bit clock</td></tr>
+          <tr><td class="pin">WS</td><td>ESP32 GPIO 6</td><td>I²S word select</td></tr>
+          <tr><td class="pin">SD</td><td>ESP32 GPIO 7</td><td>I²S data out of the mic</td></tr>
+          <tr><td class="pin">L/R</td><td>GND</td><td>Left channel</td></tr>
+          <tr><td class="pin">VDD / GND</td><td>3V3 / GND</td><td>3.3 V only</td></tr>
+
+          <tr class="part"><td colspan="3">MAX98357A amplifier</td></tr>
+          <tr><td class="pin">BCLK</td><td>ESP32 GPIO 15</td><td>Its own I²S port, separate from the mic</td></tr>
+          <tr><td class="pin">LRC</td><td>ESP32 GPIO 16</td><td></td></tr>
+          <tr><td class="pin">DIN</td><td>ESP32 GPIO 17</td><td></td></tr>
+          <tr><td class="pin">VIN / GND</td><td>ESP32 5V / GND</td><td>Not the servo rail</td></tr>
+          <tr><td class="pin">SD, GAIN</td><td>Leave open</td><td>On, both channels mixed, 9 dB gain</td></tr>
+          <tr><td class="pin">+ / −</td><td>Speaker</td><td>Bridged output: never tie − to GND</td></tr>
+
+          <tr class="part"><td colspan="3">WS2812 ring, 12 LEDs</td></tr>
+          <tr><td class="pin">DIN</td><td>ESP32 GPIO 18</td><td>The ring's input pad, not DOUT</td></tr>
+          <tr><td class="pin">5V / GND</td><td>ESP32 5V / GND</td><td>Up to 0.7 A at full white; the firmware keeps it far below that</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub">The audio and LED pins avoid the ESP32-S3's strapping pins (0, 3, 45, 46), USB (19, 20)
+      and the flash and PSRAM pins (26–37). To move one, change it in <code>config.h</code>.</p>
+  </section>
+
+  <section aria-labelledby="servos">
+    <h2 id="servos">Servo leads</h2>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Channel</th><th>Joint</th><th>Lead runs</th><th>Servo angle at joint 0</th></tr></thead>
+        <tbody>
+          <tr><td class="pin">CH 0</td><td>Pan, in the tub between the pillars</td><td>Out of the cable notch at the bottom of the right pillar, straight to the PCA9685</td><td class="pin">90° (1500 µs)</td></tr>
+          <tr><td class="pin">CH 1</td><td>Shoulder, in the tower (geared 1.8 : 1), range 0–125°</td><td>Down the kidney slot in the tower base and the disc, into the tub</td><td class="pin">0° (500 µs), upright</td></tr>
+          <tr><td class="pin">CH 2</td><td>Elbow, inside link 1, range 0–120°</td><td>Down link 1, then the kidney slot</td><td class="pin">0° (500 µs), straight</td></tr>
+          <tr><td class="pin">CH 3</td><td>Head, inside the head block</td><td>Out of the head's lead channel, down link 2 and link 1, then the kidney slot</td><td class="pin">90° (1500 µs)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub">On the PCA9685 headers, brown goes on the GND row at the board edge, red on V+, orange on PWM.
+      Leave slack at every joint: the turntable pans ±90° and the arm folds, so a tight lead will pull.
+      Calibration lives on the lamp: <code>cal</code> shows it, <code>cal save</code> keeps changes.</p>
+  </section>
+
+  <section aria-labelledby="power">
+    <h2 id="power">Power and first switch-on</h2>
+    <div class="cols">
+      <div class="card alert">
+        <h3>Power rules</h3>
+        <ul>
+          <li>The servos get their own 5 V supply, 3 A or more, on the PCA9685's V+ terminal and nothing else.</li>
+          <li>All grounds join: servo supply, ESP32, PCA9685, amp, mic, ring, button.</li>
+          <li>2200 µF across V+ and GND <b>at the PCA9685 terminal</b>, stripe to GND.</li>
+          <li>The servo supply's + must not touch the ESP32's 5V or 3V3 or the PCA9685's VCC.</li>
+          <li>On a laptop's USB alone, hold the MX key while plugging in: the servos stay off.
+            Starting four MG996Rs from USB makes the laptop cut the port.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>First power-up</h3>
+        <ol>
+          <li>Put your Wi-Fi and keys in <code>secrets.h</code>, then flash <code>firmware/hotaru</code>
+            (ESP32S3 Dev Module, OPI PSRAM, Huge APP).</li>
+          <li>Park the arm folded at rest and power up: the servos engage one at a time, it stretches
+            awake and says hello.</li>
+          <li>Hold the MX key, speak after the beep, let go. A short tap plays a random gesture.</li>
+          <li>Serial monitor at 115200: <code>list</code> shows all 60 actions, <code>ask &lt;text&gt;</code>
+            talks in text, <code>cal</code> shows the calibration. If it prints <code>no PCA9685 at 0x40</code>,
+            check SDA, SCL and VCC.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <footer>From HOTARU 3's firmware: <code>firmware/hotaru/config.h</code> (pins and calibration) and
+    <code>firmware/hotaru/README.md</code> (setup, calibration, commands).</footer>
+</div>
+
+</body>
+</html>

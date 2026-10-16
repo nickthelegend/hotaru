@@ -43,6 +43,7 @@ import math
 FIT = 0.3            # printed-on-printed sliding clearance, per side
 RUN = 0.25           # journal running clearance, per side
 M3_CLEAR = 3.4       # through-hole
+M3_PILOT = 2.6       # an M3 bolt cuts its own thread into PLA here
 M3_HEAD_D = 5.6      # DIN 912 head
 M3_HEAD_H = 3.0
 M3_CB_D = 6.4        # counterbore for the head
@@ -110,6 +111,7 @@ BAND_H = 6.0            # rim band depth below Y_T
 LEDGE_H = 4.0
 RING_BOLT_R = 76.5
 RING_BOLT_ANG = [0, 60, 120, 180, 240, 300]    # deg in XZ, x = r cos, z = r sin
+RING_NUT_Y = Y_T - BAND_H    # 47.0: lip-ring nut seat, same height as the v3.0 pockets
 
 # disc (turntable) and lip ring
 DISC_R = 70.0

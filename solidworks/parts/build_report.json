@@ -77,14 +77,14 @@
   "printed": true
  },
  "h3-tower": {
-  "volume_mm3": 96789.5,
+  "volume_mm3": 95963.9,
   "com_mm": [
-   -0.32,
-   84.8,
-   -18.63
+   -0.34,
+   84.52,
+   -18.45
   ],
-  "features": 13,
-  "seconds": 19.3,
+  "features": 14,
+  "seconds": 16.6,
   "printed": true
  },
  "h3-link2": {
@@ -220,14 +220,14 @@
   "printed": true
  },
  "h3-tub": {
-  "volume_mm3": 193852.1,
+  "volume_mm3": 247614.1,
   "com_mm": [
-   -3.52,
-   23.84,
-   0.95
+   -2.89,
+   27.99,
+   0.89
   ],
-  "features": 23,
-  "seconds": 35.3,
+  "features": 24,
+  "seconds": 27.9,
   "printed": true
  },
  "h3-lipring": {
@@ -306,5 +306,71 @@
   "features": 1,
   "seconds": 5.1,
   "printed": true
+ },
+ "h3-tower-keeper": {
+  "volume_mm3": 824.5,
+  "com_mm": [
+   2.89,
+   117.85,
+   -39.45
+  ],
+  "features": 4,
+  "seconds": 7.1,
+  "printed": false
+ },
+ "M3x8": {
+  "volume_mm3": 121.8,
+  "com_mm": [
+   -0.0,
+   0.0,
+   1.1
+  ],
+  "features": 3,
+  "seconds": 6.4,
+  "printed": false
+ },
+ "M3x10": {
+  "volume_mm3": 135.9,
+  "com_mm": [
+   -0.0,
+   0.0,
+   1.93
+  ],
+  "features": 3,
+  "seconds": 6.1,
+  "printed": false
+ },
+ "M3x12": {
+  "volume_mm3": 150.1,
+  "com_mm": [
+   -0.0,
+   0.0,
+   2.78
+  ],
+  "features": 3,
+  "seconds": 6.0,
+  "printed": false
+ },
+ "M3x16": {
+  "volume_mm3": 178.3,
+  "com_mm": [
+   -0.0,
+   -0.0,
+   4.56
+  ],
+  "features": 3,
+  "seconds": 5.8,
+  "printed": false
+ },
+ "M3-nut": {
+  "volume_mm3": 45.9,
+  "com_mm": [
+   -0.0,
+   -0.0,
+   -0.0
+  ],
+  "features": 1,
+  "seconds": 4.5,
+  "printed": false
  }
 }

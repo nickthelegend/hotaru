@@ -1,4 +1,4 @@
-/*
+﻿/*
  * hotaru_motion.ino -- HOTARU 3 motion core: four MG996R on a PCA9685.
  *
  * Board: ESP32-S3 dev board, esp32 core 3.x. No libraries beyond Wire:
@@ -33,6 +33,14 @@
  *   occupy. Its masses are SolidWorks' mass properties of the real parts;
  *   sw/h3_guard.py is the same code in Python, and it was run against
  *   SolidWorks' interference detection on random poses before it got here.
+ *
+ *   The PATH is guarded too, not just the end pose (pathClear(), plan()):
+ *   the MX button pod is fixed to the base while the arm pans over it, so
+ *   an arm folded back low can be clear at both ends of a pan and still
+ *   hit the pod in the middle. Such a move goes round instead: arm up,
+ *   pan, arm down. sw/h3_pan_sweep.py checks the routes in SolidWorks;
+ *   firmware/sim runs this file's motion code off the board:
+ *       node firmware/sim/sim.mjs
  *
  * SERIAL @ 115200
  *   p <pan> <sh> <el> <hd>   move to a pose, joint degrees
@@ -199,6 +207,54 @@ int guard(const float* a) {
   return 0;
 }
 
+// ----------------------------------------------------------- path guard ----
+// Every joint runs the same stretched trapezoid, so a move is a straight
+// line in joint space -- and guarding only its END is not enough. The MX pod
+// is fixed to the base while the arm pans: an arm folded back low is clear
+// of it at pan -60 and at pan +60 and goes straight through it at pan 0.
+// So every sample along the line is checked (sw/h3_guard.py path_clear()
+// and plan() are this code in Python; sw/h3_pan_sweep.py runs them against
+// SolidWorks). A start that is already inside a keep-out may move, but
+// never deeper.
+static const float PATH_STEP = 2.0f;       // deg of the biggest joint change
+
+static bool pathClear(const float* a, const float* b) {
+  float d = 0, p[4];
+  for (int i = 0; i < 4; i++) d = max(d, fabsf(b[i] - a[i]));
+  int n = max(1, (int)ceilf(d / PATH_STEP));
+  float lowest = min(MARGIN, clearance(a[0], a[1], a[2], a[3]));
+  for (int k = 1; k <= n; k++) {
+    for (int i = 0; i < 4; i++) p[i] = a[i] + (b[i] - a[i]) * k / n;
+    if (clearance(p[0], p[1], p[2], p[3]) < lowest) return false;
+  }
+  return true;
+}
+
+// Waypoints from `cur` to `tgt`, every leg path-clear; returns how many
+// (0 = no clear route). Tried in order: straight there; arm first, then
+// pan; pan first, then arm; lift the arm straight up (114 mm from every
+// keep-out), pan, lower it.
+static int plan(const float* cur, const float* tgt, float out[3][4]) {
+  float r[4][3][4];
+  int n[4] = {1, 2, 2, 3};
+  for (int i = 0; i < 4; i++) {
+    r[0][0][i] = tgt[i];
+    r[1][0][i] = i ? tgt[i] : cur[0];   r[1][1][i] = tgt[i];
+    r[2][0][i] = i ? cur[i] : tgt[0];   r[2][1][i] = tgt[i];
+    r[3][0][i] = i ? 0.0f : cur[0];     r[3][1][i] = i ? 0.0f : tgt[0];   r[3][2][i] = tgt[i];
+  }
+  for (int k = 0; k < 4; k++) {
+    const float* at = cur;
+    bool ok = true;
+    for (int l = 0; l < n[k] && ok; l++) { ok = pathClear(at, r[k][l]); at = r[k][l]; }
+    if (ok) {
+      memcpy(out, r[k], sizeof(float) * 4 * n[k]);
+      return n[k];
+    }
+  }
+  return 0;
+}
+
 // Scale each joint's limits so all joints of a move arrive together: the
 // joint with the longest trapezoid sets the time, the rest slow down.
 float vlim[4], alim[4];
@@ -212,6 +268,26 @@ static float moveTime(float d, float v, float a) {
   d = fabsf(d);
   return max(1.5f * d / v, sqrtf(4.5f * d / a));
 }
+
+static void startLeg(const float* tgt) {
+  float T = 0.0f;
+  for (int i = 0; i < 4; i++) {
+    J[i].target = tgt[i];
+    T = max(T, moveTime(J[i].target - J[i].pos, VMAX, AMAX));
+  }
+  for (int i = 0; i < 4; i++) {
+    float d = fabsf(J[i].target - J[i].pos);
+    if (T < 1e-3f || d < 1e-3f) { vlim[i] = VMAX; alim[i] = AMAX; continue; }
+    // same-shape trapezoid, stretched to T: ramp time fixed at T/3
+    float ta = T / 3.0f;
+    vlim[i] = d / (T - ta);
+    alim[i] = vlim[i] / ta;
+  }
+}
+
+// the route under way: route[legAt] is running, legN legs in all
+float route[4][4], goal[4];
+int legN = 0, legAt = 0;
 
 bool setPose(const float* req) {
   float tgt[4];
@@ -230,19 +306,34 @@ bool setPose(const float* req) {
     Serial.println(F("guard: REFUSED -- that pose puts the arm or shade into the base"));
     return false;
   }
-  float T = 0.0f;
+  // Plan from where the joints will actually stop. A move already under
+  // way brakes along its own line first -- a line that was checked when it
+  // started -- instead of swerving off it toward the new target.
+  float from[4];
+  bool moving = false;
   for (int i = 0; i < 4; i++) {
-    J[i].target = tgt[i];
-    T = max(T, moveTime(J[i].target - J[i].pos, VMAX, AMAX));
+    from[i] = J[i].pos;
+    if (J[i].vel == 0) continue;
+    moving = true;
+    float s = J[i].vel * fabsf(J[i].vel) / (2.0f * alim[i]);
+    float left = J[i].target - J[i].pos;
+    from[i] += (fabsf(s) < fabsf(left)) ? s : left;
   }
-  for (int i = 0; i < 4; i++) {
-    float d = fabsf(J[i].target - J[i].pos);
-    if (T < 1e-3f || d < 1e-3f) { vlim[i] = VMAX; alim[i] = AMAX; continue; }
-    // same-shape trapezoid, stretched to T: ramp time fixed at T/3
-    float ta = T / 3.0f;
-    vlim[i] = d / (T - ta);
-    alim[i] = vlim[i] / ta;
+  float legs[3][4];
+  int n = plan(from, tgt, legs);
+  if (!n) {
+    Serial.println(F("guard: REFUSED -- no route there that keeps clear of the base"));
+    return false;
   }
+  if (n > 1) Serial.printf("guard: going round the button pod, %d legs\n", n);
+  legN = 0;
+  if (moving) memcpy(route[legN++], from, sizeof(from));
+  memcpy(route[legN], legs, sizeof(float) * 4 * n);
+  legN += n;
+  legAt = 0;
+  memcpy(goal, tgt, sizeof(goal));
+  if (moving) for (int i = 0; i < 4; i++) J[i].target = from[i];   // brake, same limits
+  else startLeg(route[0]);
   return true;
 }
 
@@ -283,18 +374,24 @@ bool goPose(const String& n) {
   return false;
 }
 
-bool settled() {
+bool settled() {                               // this leg done
   for (int i = 0; i < 4; i++)
     if (J[i].pos != J[i].target || J[i].vel != 0) return false;
   return true;
 }
+bool idle() { return settled() && legAt + 1 >= legN; }   // whole route done
 
 // ------------------------------------------------------------ engaging ----
 // Servos jump to the first pulse they see. Engage one at a time, 250 ms
 // apart, at the REST pose the lamp is parked in -- four MG996Rs lurching at
-// once is the brownout the old bench logs recorded.
+// once is the brownout the old bench logs recorded. The pan goes LAST: a
+// released arm droops, and lifting it back to rest happens in its own
+// plane; rest clears the button pod at every pan angle (pan_report.json),
+// so only then is it safe to swing the base back to centre.
 void engageAll() {
-  for (int i = 0; i < 4; i++) {
+  static const int ORDER[4] = {1, 2, 3, 0};
+  for (int k = 0; k < 4; k++) {
+    int i = ORDER[k];
     J[i].live = true; J[i].vel = 0;
     writeJoint(i);
     delay(250);
@@ -325,7 +422,7 @@ void setup() {
   pcaBegin();
   releaseAll();
   for (int i = 0; i < 4; i++) {                 // assume parked at rest
-    J[i].pos = J[i].target = POSES[1].a[i];
+    J[i].pos = J[i].target = goal[i] = POSES[1].a[i];
     vlim[i] = VMAX; alim[i] = AMAX;
   }
   engageAll();
@@ -339,7 +436,8 @@ void loop() {
     float dt = (now - lastUs) / 1e6f;
     lastUs = now;
     for (int i = 0; i < 4; i++) { stepJoint(i, dt); writeJoint(i); }
-    if (demo && settled() && millis() > demoAt) {
+    if (settled() && legAt + 1 < legN) startLeg(route[++legAt]);
+    if (demo && idle() && millis() > demoAt) {
       poseIdx = (poseIdx + 1) % N_POSES;
       setPose(POSES[poseIdx].a);
       demoAt = millis() + 1500;
@@ -365,7 +463,7 @@ void loop() {
   } else if (cmd.startsWith("j ")) {
     int i; float d;
     if (sscanf(cmd.c_str() + 2, "%d %f", &i, &d) == 2 && i >= 0 && i < 4) {
-      float a[4]; for (int k = 0; k < 4; k++) a[k] = J[k].target;
+      float a[4]; for (int k = 0; k < 4; k++) a[k] = goal[k];
       a[i] = d; setPose(a);
     }
   } else if (cmd.startsWith("v ")) VMAX = constrain(cmd.substring(2).toFloat(), 5, 300);
@@ -380,10 +478,14 @@ void loop() {
   }
   else if (cmd.startsWith("g ")) {
     float a[4];
-    if (sscanf(cmd.c_str() + 2, "%f %f %f %f", &a[0], &a[1], &a[2], &a[3]) == 4)
-      Serial.printf("guard %d  shoulder servo %.3f N.m (max %.3f)  clearance %.1f mm\n",
+    if (sscanf(cmd.c_str() + 2, "%f %f %f %f", &a[0], &a[1], &a[2], &a[3]) == 4) {
+      float cur[4], legs[3][4];
+      for (int i = 0; i < 4; i++) cur[i] = J[i].pos;
+      Serial.printf("guard %d  shoulder servo %.3f N.m (max %.3f)  clearance %.1f mm  "
+                    "route %d legs\n",
                     guard(a), fabsf(shoulderTorque(a[1], a[2], a[3])) / GEAR, TAU_MAX,
-                    clearance(a[0], a[1], a[2], a[3]));
+                    clearance(a[0], a[1], a[2], a[3]), plan(cur, a, legs));
+    }
   }
   else if (cmd == "off") releaseAll();
   else if (cmd == "on")  engageAll();

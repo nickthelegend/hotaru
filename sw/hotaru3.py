@@ -261,10 +261,16 @@ def led_ring(sw):
 # ================================================================ printed ===
 def tub(sw):
     p = sw.new_part("h3-tub")
-    prof = [(0, 0), (H.TUB_R - 3.0, 0), (H.TUB_R, 3.0), (H.TUB_R, H.Y_T),
+    # The slew ring juts 16.5 mm in from the wall. With a flat underside it
+    # printed in mid-air and the slicer filled the tub with tree supports
+    # (the user's print, 2026-10-01: a mess, and hours of it). A 45 deg cone
+    # under it grows the ring out of the wall instead -- no supports. The
+    # top of the ring (what the disc and lip ring sit on) is unchanged. The
+    # bottom edge chamfer is 50 deg for the same reason.
+    drop = H.TUB_R - H.TUB_WALL - H.LEDGE_R0
+    prof = [(0, 0), (H.TUB_R - 2.5, 0), (H.TUB_R, 3.0), (H.TUB_R, H.Y_T),
             (H.LEDGE_R0, H.Y_T), (H.LEDGE_R0, H.Y_T - H.LEDGE_H),
-            (H.BAND_R0, H.Y_T - H.LEDGE_H), (H.BAND_R0, H.Y_T - H.BAND_H),
-            (H.TUB_R - H.TUB_WALL, H.Y_T - H.BAND_H),
+            (H.TUB_R - H.TUB_WALL, H.Y_T - H.LEDGE_H - drop),
             (H.TUB_R - H.TUB_WALL, H.TUB_FLOOR), (0, H.TUB_FLOOR)]
     with p.sketch("XY") as s:
         s.cline(0, -5, 0, 80)
@@ -281,14 +287,11 @@ def tub(sw):
     holes = [(hx, hz) for hx in (-14.4, 35.1) for hz in (-5.0, 5.0)]
     with p.sketch("wXZ") as s:
         for hx, hz in holes:
-            s.circle(hx, hz, H.M3_CLEAR / 2)
-    p.cut(tab_under - 13.0, tab_under + OVL, "Pillar bolt holes")
-    with p.sketch("wXZ") as s:
-        for (x0, x1, o), hx in zip(posts, (-14.4, 35.1)):
-            for hz in (-5.0, 5.0):
-                edge = x0 if o < 0 else x1
-                nut_slot(s, (hx, hz), H.NUT_POCKET_AF, (o, 0), abs(edge - hx) + 0.5)
-    p.cut(tab_under - 8.7, tab_under - 6.0, "Pillar nut slots")
+            s.circle(hx, hz, H.M3_PILOT / 2)
+    # M3x10 through the servo tab threads straight into the pillar (7.5 mm of
+    # thread). The sideways nut slots these replace had ceilings open to one
+    # side -- Bambu Studio called each one a floating cantilever.
+    p.cut(tab_under - 13.0, tab_under + OVL, "Pillar pilot holes")
     with p.sketch("wXZ") as s:          # the lead leaves the far end, low
         s.crect(35.6, 0, 10.2, 9.0)
     p.cut(H.TUB_FLOOR - OVL, 13.0, "Servo lead notch")
@@ -360,8 +363,14 @@ def tub(sw):
             s.slot(7.0, zc, 21.0, zc, 2.2)
     p.cut(66.0, 90.0, "Speaker grille")
     with p.sketch("wYZ") as s:          # USB well
-        s.crect(H.TUB_FLOOR + H.ESP_POST + 4.5, H.ESP_XZ[1], 11.0, 27.0, 2.0)
-    p.cut(H.ESP_XZ[0] + H.ESP_L / 2 + 1.0, 90.0, "USB window")
+        # one opening per USB-C port, 13 wide (a plug's overmold), with a
+        # 45 deg pointed top: a flat 27 mm top was a floating cantilever
+        y0, y1 = H.TUB_FLOOR + H.ESP_POST - 1.0, H.TUB_FLOOR + H.ESP_POST + 10.0
+        for dz in (-8.53, 8.53):
+            zc = H.ESP_XZ[1] + dz
+            s.poly([(y0, zc - 6.5), (y1, zc - 6.5), (y1 + 6.5, zc),
+                    (y1, zc + 6.5), (y0, zc + 6.5)])
+    p.cut(H.ESP_XZ[0] + H.ESP_L / 2 + 1.0, 90.0, "USB windows")
     with p.sketch("XY") as s:           # back vents
         for k in range(-5, 6):
             if k == 0:
@@ -374,15 +383,14 @@ def tub(sw):
             H.RING_BOLT_R * math.sin(math.radians(a))) for a in H.RING_BOLT_ANG]
     with p.sketch("wXZ") as s:
         for x, z in pts:
-            s.circle(x, z, H.M3_CLEAR / 2)
-    p.cut(H.Y_T - H.BAND_H - OVL, H.Y_T + OVL, "Ring bolt holes")
-    with p.sketch("wXZ") as s:
-        for (x, z), a in zip(pts, H.RING_BOLT_ANG):
-            s.hexagon(x, z, H.NUT_POCKET_AF - 0.2, rot=a)
-    p.cut(H.Y_T - H.BAND_H - OVL, H.Y_T - H.BAND_H + H.NUT_POCKET_H, "Ring nut pockets")
+            s.circle(x, z, H.M3_PILOT / 2)
+    # The cone under the slew ring is solid PLA, so the lip ring's M3x12s
+    # thread straight into it (6 mm of thread each). Same positions as the
+    # lip ring's printed holes; no nuts inside the tub to fiddle with.
+    p.cut(H.Y_T - 12.0, H.Y_T + OVL, "Ring pilot holes")
     with p.sketch("wXZ") as s:
         s.circle(0, H.MX_WIRE_Z, 3.5)
-    p.cut(H.Y_T - H.BAND_H - OVL, H.Y_T + OVL, "MX lead hole")
+    p.cut(30.0, H.Y_T + OVL, "MX lead hole")
     p.colour(COL["shell"])
     return p
 
@@ -922,6 +930,118 @@ def keycap(sw):
     p.cut(y0 - OVL, y0 + 3.0, "Stem socket")
     p.colour(COL["accent"])
     return p
+
+
+# ============================================================= hand fixes ===
+# Cuts made BY HAND on parts that were already printed (2026-10-12: the user
+# chose a saw over a reprint). h3_build exports a part's print STL before
+# its hand fix runs -- the STL stays exactly what was printed -- and saves
+# the SolidWorks part after it, so the assembly checks the lamp as built.
+
+KEEPER_Y0 = H.Y_P - H.SV_X0 + 0.4                                    # 112.9, window top
+KEEPER_Z = (H.TOWER_BACK_Z + 4.0, H.SH_SHAFT_Z + H.SV_W / 2 + 0.4)   # -50.0 .. -28.35
+
+
+def tower_handfix(p):
+    """The shoulder servo cannot get into the printed tower: its case top
+    has to pass 13.8 mm through the bulkhead window, the -X cheek leaves
+    1.45 mm behind the case, and the bar over the window stops it dropping
+    in from above. Two saw cuts free that bar -- one flush down the back
+    wall, one straight up from the window's front edge -- and the servo
+    drops in. The bar keeps the two upper tab-bolt holes and nut pockets it
+    was printed with, so it goes back in as a keeper (tower_keeper)."""
+    bx0, bx1 = H.SH_BULK_X
+    with p.sketch("wYZ") as s:
+        s.rect(KEEPER_Y0 - OVL, KEEPER_Z[0], H.Y_P + 24.0, KEEPER_Z[1])
+    p.cut(bx0 - OVL, bx1 + OVL, "HAND FIX - bar over the servo window sawn out")
+
+
+def tower_keeper(sw):
+    """The bar tower_handfix saws out, modelled line-to-line with its slot
+    (the saw kerf only makes it looser). Same features it had in the tower."""
+    p = sw.new_part("h3-tower-keeper")
+    bx0, bx1 = H.SH_BULK_X
+    YP, zs = H.Y_P, H.SH_SHAFT_Z
+    with p.sketch("wYZ") as s:
+        s.rect(KEEPER_Y0, KEEPER_Z[0], YP + 20.0, KEEPER_Z[1])
+    p.extrude(bx0, bx1, "Keeper")
+    with p.sketch("wYZ") as s:
+        s.poly([(YP + 6.0, -21.8), (YP + 20.2, -21.8), (YP + 20.2, -30.0)])
+    p.cut(bx0 - OVL, bx1 + OVL, "Bulkhead chamfer")
+    tabs = [(YP - hx, zs - hy) for hx, hy in H.SV_HOLES if YP - hx > KEEPER_Y0]
+    with p.sketch("wYZ") as s:
+        for y, z in tabs:
+            s.circle(y, z, H.M3_CLEAR / 2)
+    p.cut(bx0 - OVL, bx1 + OVL, "Tab bolt holes")
+    with p.sketch("wYZ") as s:
+        for y, z in tabs:
+            s.hexagon(y, z, H.NUT_POCKET_AF)
+    p.cut(bx1 - H.NUT_POCKET_H, bx1 + OVL, "Tab nut pockets")
+    p.colour(COL["shell"])
+    return p
+
+
+def tub_handfix(p):
+    """The slew-ring cone (the support-free fix) overhangs two things that
+    go in from above. The speaker stands right under the ledge, so it has
+    to come in tilted from the middle: its rails are snipped to 10 mm. The
+    cone also roofs the mic slot 1.7 mm above the board, so the slot's -Z
+    end wall is nibbled out and the board slides in sideways (the +Z side
+    would send it into the amp). The third cut, a groove for the pan
+    servo's cable boot, is older trouble: the old 8 mm audit steps missed it."""
+    z0, z1 = H.SPK_Z0, H.SPK_Z0 + H.SPK_L
+    with p.sketch("wXZ") as s:
+        s.rect(H.SPK_X - 3.0, z1 - 1.0, H.SPK_X + H.SPK_T + 3.0, z1 + 2.0)
+        s.rect(H.SPK_X - 3.0, z0 - 2.0, H.SPK_X + H.SPK_T + 3.0, z0 + 1.0)
+    p.cut(H.TUB_FLOOR + 10.0, H.TUB_FLOOR + 24.0 + OVL, "HAND FIX - speaker rails snipped to 10 mm")
+    with p.sketch("wXZ") as s:
+        s.rect(H.MIC_X - 1.1, -10.0 - OVL, H.MIC_X + 1.1, -7.8 + OVL)
+    p.cut(H.MIC_Y - 8.0, H.MIC_Y + 9.0 + OVL, "HAND FIX - mic slot end wall nibbled out")
+    # The pan servo's case end sits 0.4 mm off the +X pillar, and its cable
+    # boot sticks out of that end near the bottom, below the pillar's lead
+    # notch -- lowering the servo drags the boot down the pillar face. A
+    # groove from the notch to the top lets it through. 2.5 deep x 6.4 wide
+    # leaves 1.2 mm round each M3 pilot hole (x 35.1, z +-5).
+    tab_under = H.PAN_CASE_TOP + H.SV_TAB_Z0
+    x0 = 31.1                                           # pillar inner face
+    with p.sketch("wXZ") as s:
+        s.rect(x0 - 0.5, -3.2, x0 + 2.5, 3.2)
+    p.cut(13.0 - OVL, tab_under + OVL, "HAND FIX - groove for the pan servo's cable boot")
+
+
+# =============================================================== hardware ===
+def bolt(sw, length):
+    """ISO 4762 M3 socket head. Local frame: axis +Z, the head's underside
+    on z = 0, the shank (modelled at the 3.0 major diameter) to z = length."""
+    p = sw.new_part(f"M3x{length:g}")
+    with p.sketch("XY") as s:
+        s.circle(0, 0, H.M3_HEAD_D / 2)
+    p.extrude(-H.M3_HEAD_H, 0, "Head")
+    with p.sketch("XY") as s:
+        s.circle(0, 0, 1.5)
+    p.extrude(0, length, "Shank")
+    with p.sketch("XY") as s:
+        s.hexagon(0, 0, 2.5)
+    p.cut(-H.M3_HEAD_H - OVL, -H.M3_HEAD_H + 1.6, "Hex socket")
+    p.colour(COL["metal"])
+    return p
+
+
+def nut(sw):
+    """ISO 4032 M3. Local frame: axis +Z, centred on z = 0, corners at
+    30 + 60k deg -- the same as Sketch.hexagon's pockets at rot 0."""
+    p = sw.new_part("M3-nut")
+    with p.sketch("XY") as s:
+        s.hexagon(0, 0, H.M3_NUT_AF)
+        s.circle(0, 0, 1.5)
+    p.extrude(-H.M3_NUT_H / 2, H.M3_NUT_H / 2, "Nut")
+    p.colour(COL["metal"])
+    return p
+
+
+HANDFIX = {"h3-tower": tower_handfix, "h3-tub": tub_handfix}
+HANDCUT = [("h3-tower-keeper", tower_keeper)]
+HARDWARE = [(f"M3x{n}", (lambda sw, n=n: bolt(sw, n))) for n in (8, 10, 12, 16)] + [("M3-nut", nut)]
 
 
 PRINTED = [("h3-tub", tub), ("h3-lipring", lipring), ("h3-disc", disc),

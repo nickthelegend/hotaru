@@ -29,7 +29,7 @@ X_DOWN = np.array([[0, 0, 1], [0, 1, 0], [-1, 0, 0]])    # world X -> -Z
 
 PLAN = {
     # part               orientation   qty  why
-    "h3-tub":          (Y_UP,   1, "floor on the bed; the slew ring is the top face"),
+    "h3-tub":          (Y_UP,   1, "floor on the bed; a 45 deg cone carries the slew ring, no supports"),
     "h3-lipring":      (Y_UP,   1, "flat underside down; the lip's 45 deg underside needs no support"),
     "h3-disc":         (Y_UP,   1, "underside down; the horn pocket and nut pockets bridge over"),
     "h3-tower":        (Y_UP,   1, "base plate down; cheeks, bulkhead and back wall rise straight"),

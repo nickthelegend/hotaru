@@ -1,6 +1,33 @@
 # HOTARU 3 — print plates for a Bambu P1S
 
-Five plates, 256 × 256 bed, **no supports on any part**. Open a `.3mf` in
+## Just print it: [`HOTARU3-P1S-print-all.gcode.3mf`](HOTARU3-P1S-print-all.gcode.3mf)
+
+One file, already sliced for a **P1S, 0.4 nozzle, Bambu PLA Basic, Textured
+PEI plate**: all 18 parts on 4 plates, 19.8 h and 641 g in total. Open it in
+Bambu Studio (or send it from Bambu Handy), print plate 1, clear the bed,
+print plate 2, and so on. A P1S prints one plate at a time; the tub and the
+lip ring are each 164 mm across, so no single 256 mm plate holds everything.
+
+| plate | parts | time | PLA |
+|---|---|---|---|
+| 1 | shade, tower, link2, head cover, elbow pin, shoulder pin, keycap | 5.8 h | 193 g |
+| 2 | link1, head, lip ring, link2 cover, LED clamp, head pin, shoulder pin | 5.3 h | 173 g |
+| 3 | disc, link1 cover, pinion | 2.6 h | 86 g |
+| 4 | tub | 6.1 h | 189 g |
+
+The per-part settings below are built in. **Four parts get supports**, set
+to "critical regions only" so the slicer supports just what would otherwise
+print in mid-air: the tub (its slew-ring ledge juts 16.5 mm straight in from
+the wall), link1, the head and the shade. Bambu Studio flags each of them as
+a floating cantilever without supports. Every other part prints without.
+[`HOTARU3-P1S-project.3mf`](HOTARU3-P1S-project.3mf) is the same thing
+unsliced, to change filament, plate type or settings.
+
+## The original five plates
+
+Five plates, 256 × 256 bed. (These were published as needing no supports;
+the slicer disagrees for the four parts above, so add supports to those if
+you print from these.) Open a `.3mf` in
 Bambu Studio or OrcaSlicer. Every part is its own object, already placed and
 lying on the face it was designed to print on. The `.stl` of each plate is
 the same layout as one mesh, for other slicers. `hotaru3-plates.zip` has all

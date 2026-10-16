@@ -1,0 +1,650 @@
+[
+ {
+  "step": "capacitor into its clip, tilted in from the middle",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    11.5,
+    0.0
+   ],
+   [
+    6.0104076400856545,
+    12.0,
+    6.0104076400856545
+   ],
+   [
+    6.0104076400856545,
+    80.0,
+    6.0104076400856545
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "PCA9685 onto its pins",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    40.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "ESP32 in from the middle, onto its posts",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    18.0,
+    0.0
+   ],
+   [
+    -10.0,
+    18.0,
+    0.0
+   ],
+   [
+    -10.0,
+    80.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "amp in from the middle, onto its posts",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    6.0,
+    0.0
+   ],
+   [
+    10.1,
+    6.0,
+    -6.45
+   ],
+   [
+    10.1,
+    80.0,
+    -6.45
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "speaker in from the middle, down the snipped rails",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    10.5,
+    0.0
+   ],
+   [
+    -11.0,
+    10.5,
+    0.0
+   ],
+   [
+    -11.0,
+    80.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "mic slides in sideways through the opened end",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    -12.0
+   ],
+   [
+    0.0,
+    -1.0,
+    -15.0
+   ],
+   [
+    0.0,
+    -3.0,
+    -17.0
+   ],
+   [
+    0.0,
+    -8.0,
+    -18.0
+   ],
+   [
+    0.0,
+    -12.0,
+    -20.0
+   ],
+   [
+    17.0,
+    -12.0,
+    -20.0
+   ],
+   [
+    17.0,
+    70.0,
+    -20.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "pan servo between the pillars",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    60.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "pan horn onto the spline",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    15.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] tower onto the disc",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    40.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "disc + tower onto the pan horn",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    40.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "lip ring over the disc",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    30.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "MX switch snaps into the pod",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    30.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "keycap onto the switch",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    20.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] trimmed horn onto the shoulder servo",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    10.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] pinion over the horn",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    15.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "shoulder servo + pinion drop in from above",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    70.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "keeper back into its slot",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    30.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] elbow servo into link1",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -30.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] link1 cover",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -15.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "link1 down between the cheeks",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    70.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "shoulder pin, +X side",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    15.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "shoulder pin, -X side",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -15.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "elbow horn onto the spline",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    10.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "link2 onto the elbow horn",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    15.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] head servo into the head",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -30.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] trimmed horn into the shade's pocket",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -12.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] shade + horn onto the head servo (cover still off)",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    5.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] head cover slides in under the idler arm",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    -70.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "[bench] head pin",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -15.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "head + shade into link2's end",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    40.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "link2 cover",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -15.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "elbow pin",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -15.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "LED ring into the shade",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    40.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ },
+ {
+  "step": "LED clamp",
+  "ok": true,
+  "path": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    40.0,
+    0.0
+   ]
+  ],
+  "blocked": null
+ }
+]
