@@ -695,3 +695,53 @@ def revolve_shell(z0, z1, od_fn, wall, steps=24, seg=128):
     m.add_cap(ring2d(outer[-1], inner[-1]), zs[-1], up=True)
     m.add_cap(ring2d(outer[0], inner[0]), zs[0], up=False)
     return m
+
+
+# --------------------------------------------------------------- 3MF ------
+# Bambu Studio's native project container. A 3MF is an OPC zip: a content
+# types part, one relationship pointing at the model, and the model itself
+# as XML. Written here rather than exported from the slicer by hand so a
+# plate is reproducible from the CAD like every other artefact.
+_TMF_TYPES = (
+    '<?xml version="1.0" encoding="UTF-8"?>\n'
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-'
+    'package.relationships+xml"/>'
+    '<Default Extension="model" ContentType="application/vnd.ms-package.'
+    '3dmanufacturing-3dmodel+xml"/></Types>')
+
+_TMF_RELS = (
+    '<?xml version="1.0" encoding="UTF-8"?>\n'
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/'
+    'relationships"><Relationship Target="/3D/3dmodel.model" Id="rel0" '
+    'Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>'
+    '</Relationships>')
+
+
+def tmf_write(path, mesh, name="model"):
+    """Write ONE mesh as a 3MF project Bambu Studio can open directly."""
+    import zipfile
+
+    V, F = mesh._np()
+    # 3MF wants the model in positive space; drop it onto z=0 at the origin.
+    V = V - np.array([V[:, 0].min(), V[:, 1].min(), V[:, 2].min()])
+
+    vs = "".join(
+        f'<vertex x="{x:.4f}" y="{y:.4f}" z="{z:.4f}"/>' for x, y, z in V)
+    ts = "".join(
+        f'<triangle v1="{a}" v2="{b}" v3="{c}"/>' for a, b, c in F)
+    model = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<model unit="millimeter" xml:lang="en-US" '
+        'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">'
+        f'<metadata name="Title">{name}</metadata>'
+        '<resources><object id="1" type="model"><mesh>'
+        f'<vertices>{vs}</vertices><triangles>{ts}</triangles>'
+        '</mesh></object></resources>'
+        '<build><item objectid="1" '
+        'transform="1 0 0 0 1 0 0 0 1 0 0 0"/></build></model>')
+
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+        z.writestr("[Content_Types].xml", _TMF_TYPES)
+        z.writestr("_rels/.rels", _TMF_RELS)
+        z.writestr("3D/3dmodel.model", model)

@@ -1187,17 +1187,31 @@ def v2_bolts():
     minor-diameter neck through the 4.0 plate, then 6.5 of the proven M6x2
     printed thread into the sleeve on the far side."""
     m = pl.Mesh()
-    neck_d = P.SCREW_MAJOR - 2 * pl.THREAD_RAMP * P.SCREW_PITCH
     for i in range(22):
-        x, y = (i % 6) * 14.0, (i // 6) * 16.0
-        m += pl.prism(affinity.translate(_slot_head(PB_HEAD), x, y), 0.0, 2.6)
-        m += pl.prism(affinity.translate(pl.circle(neck_d, 32), x, y),
-                      2.6 - OVL, 7.0)
-        th = pl.thread(P.SCREW_MAJOR, P.SCREW_PITCH, 7.0 - OVL, 13.5,
-                       seg=20, per_turn=8)
-        th.translate(dx=x, dy=y)
-        m += th
+        q = v2_bolt_one()
+        q.translate(dx=(i % 6) * 14.0, dy=(i // 6) * 16.0)
+        m += q
     return [("v2-bolts", m, COLORS["v2-accent"])]
+
+
+# Pitch the tray grids use. The head is the widest feature at PB_HEAD, so
+# 14 x 16 leaves 3 mm between heads in X and 5 in Y -- enough that a knife
+# gets in beside a head without touching its neighbour.
+BOLT_PITCH = (14.0, 16.0)
+
+
+def v2_bolt_one():
+    """ONE P6 thumb-bolt, at the origin, head down on the plate.
+
+    Factored out of v2_bolts so the spares tray prints the SAME bolt rather
+    than a second copy of the recipe that can drift from it."""
+    m = pl.Mesh()
+    neck_d = P.SCREW_MAJOR - 2 * pl.THREAD_RAMP * P.SCREW_PITCH
+    m += pl.prism(_slot_head(PB_HEAD), 0.0, 2.6)
+    m += pl.prism(pl.circle(neck_d, 32), 2.6 - OVL, 7.0)
+    m += pl.thread(P.SCREW_MAJOR, P.SCREW_PITCH, 7.0 - OVL, 13.5,
+                   seg=20, per_turn=8)
+    return m
 
 
 def v2_screws_strip():
